@@ -31,8 +31,8 @@ def user_regist():
         })
 
     api_logger.debug(req_data)
-    phone = request.form.get('phone')
-    input_code = request.form.get('input_code')
+    phone = req_data["phone"]
+    input_code = req_data["input_code"]
     # 验证上传的必须的数据是否存在
     if not confirm(phone,input_code):
         return jsonify({
@@ -41,9 +41,9 @@ def user_regist():
         })
     dao = UserDao()
     dao.save(**req_data)
-
+    token = cache.new_token()
     return jsonify({
-        'code': 8000,
+        'code': 200,
         'msg': 'ok',
         'data': req_data
     })

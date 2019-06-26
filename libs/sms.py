@@ -12,8 +12,7 @@ def new_code(phone):
     """
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     rd.set(phone,code)          #将生成的验证码保存在redis中
-    rd.expire(phone, 60)  # 有效时间： 12小时
-
+    rd.expire(phone, 60)
     # 发送验证给用户
     send_sms_code(phone, code)
 

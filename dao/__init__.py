@@ -56,7 +56,9 @@ class BaseDao():
     def list(self, table_name,
              *fields, where=None, args=None,
              page=1, page_size=20):
-        pass
+        sql = 'select  %s(%s) from' % \
+              (table_name)
+
 
     def count(self, table_name):
         pass
