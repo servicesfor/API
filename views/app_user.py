@@ -1,5 +1,7 @@
 from flask import Blueprint
 from flask import request, jsonify
+
+from libs.cache import new_token, save_token
 from logger import api_logger
 from dao.user_dao import UserDao
 from datetime import datetime
@@ -12,6 +14,10 @@ blue = Blueprint('user_api', __name__)
 def send_code():
     phone = request.form.get('phone')
     new_code(phone)
+    return jsonify({
+        "code":200,
+        "msg":"验证码发送成功"
+    })
 
 
 
@@ -22,6 +28,7 @@ def user_regist():
     api_logger.info(request.headers)
     if request.headers['Content-Type'].startswith('application/json'):
         req_data = request.get_json()
+        print("req_data",req_data)
 
     if req_data is None:
         api_logger.warn('%s 请求参数未上传-json' % request.remote_addr)
@@ -31,20 +38,22 @@ def user_regist():
         })
 
     api_logger.debug(req_data)
-    phone = request.form.get('phone')
-    input_code = request.form.get('input_code')
+    phone = req_data['phone']
+    input_code = req_data['input_code']
     # 验证上传的必须的数据是否存在
     if not confirm(phone,input_code):
         return jsonify({
             "code":400,
-            "msg":"验证码输入错误,请重新输入"
+            "msg":"验证码输入错误,请重新输入",
+            'data':req_data
         })
     dao = UserDao()
     dao.save(**req_data)
-
+    token = new_token()
+    # save_token(token,user_id)
     return jsonify({
-        'code': 8000,
-        'msg': 'ok',
+        'code': 200,
+        'msg': '注册成功',
         'data': req_data
     })
 

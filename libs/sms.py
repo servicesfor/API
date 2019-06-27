@@ -12,7 +12,7 @@ def new_code(phone):
     """
     code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
     rd.set(phone,code)          #将生成的验证码保存在redis中
-    rd.expire(phone, 60)  # 有效时间： 12小时
+    rd.expire(phone, 120)  # 有效时间： 12小时
 
     # 发送验证给用户
     send_sms_code(phone, code)
@@ -21,7 +21,8 @@ def new_code(phone):
 def confirm(phone, input_code):
     # 从缓存cache中读取phone对应的验证码
     # 和input_code进行比较，如果通过则返回True
-    return input_code == rd.get(phone)
+
+    return input_code == rd.get(phone).decode()
 
 
 
@@ -47,6 +48,3 @@ def send_sms_code(phone, code):
     print(str(response, encoding='utf-8'))
 
 
-if __name__ == '__main__':
-    new_code('13109417279')
-    # send_sms_code('18403559524','ghhfg')

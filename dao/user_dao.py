@@ -9,6 +9,7 @@ class UserDao(BaseDao):
 
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
+
         login_name = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
         # values['login_auth_str'] = make_password(values['login_auth_str'])
         return super(UserDao, self).save('yl_user', **values)
