@@ -47,12 +47,12 @@ def login_code():
         })
     req_data.pop('input_code')
     dao = UserDao()
-    if dao.check_login_name(phone):
-        result = dao.login_data(phone)
+    if dao.check_login_name(phone):     #检测用户名是否存在
+        result = dao.login_data(phone)      #已存在则直接读取数据库数据
     else:
-        dao.save(**req_data)
+        dao.save(**req_data)                #不存在则存入数据库中,在读取数据
         result = dao.login_data(phone)
-    token = cache.new_token()
+    token = cache.new_token()       #设置新token
     return jsonify({
         'code': 200,
         'msg': 'ok',
@@ -82,17 +82,16 @@ def login_str():
     # 验证上传的必须的数据是否存在
 
     dao = UserDao()
-    if dao.check_login_name(phone):
-        if dao.login_str(phone,auth_str):
+    if dao.check_login_name(phone):         #检测用户名是否存在
+        if dao.login_str(phone,auth_str):       #检测密码是否正确
             login_data = dao.login_data(phone)
             token = cache.new_token()
-            result = {
+            return jsonify({
                 'code': 200,
                 'msg': 'ok',
                 'token':token,
                 'data': login_data
-            }
-            return jsonify(result)
+            })
     return jsonify({
         'code': 406,
         'msg': '用户名或密码输入错误',

@@ -39,4 +39,12 @@ class UserDao(BaseDao):
         # print(user_data, '======================asrfda')
         return user_data
 
-
+if __name__ == '__main__':
+    ofc_dict = {
+        "common_ofc_id": [i for i in range(1, 10)],  # 常见科室id
+        "nei_ofc_id": [6, 24, 25, 26, 27],  # 内科
+        "wai_ofc_id": [4, 15, 16, 17, 19, 20],  # 外科
+        "other_ofc_id": [10, 11, 12, 13, 14, 18, 21, 22, 23],  # 其他科室
+    }
+    ofc_list = ofc_dict.keys()
+    print(ofc_list)

@@ -4,10 +4,10 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    'host': 'localhost',
+    'host': '121.199.63.71',
     'port': 3306,
-    'user': 'root',
-    'password': '123456',
+    'user': 'yladmin',
+    'password': 'yl123',
     'db': 'yl_api_db',
     'charset': 'utf8'
 }
@@ -72,5 +72,6 @@ class BaseDao():
                 data = list(data)
 
         return data
+
 
 
