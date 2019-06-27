@@ -21,8 +21,11 @@ def new_code(phone):
 def confirm(phone, input_code):
     # 从缓存cache中读取phone对应的验证码
     # 和input_code进行比较，如果通过则返回True
+    if  rd.get(phone):
+        if input_code == rd.get(phone).decode():
+            rd.delete(phone)
+            return True
 
-    return input_code == rd.get(phone).decode()
 
 
 

@@ -40,20 +40,15 @@ class BaseDao():
         self.db = DB()
 
     def save(self, table_name, **values):
-        # insert or update
-        # values['id'] 如果ID值是存在的，则是更新, 反之是插入
-        # print(values)
-        # print("safarfasf=======",','.join(values.keys()))
-        # print('=======', ','.join(['%%(%s)s' % key for key in values.keys()]))
-        # print(['%%(%s)s'% key for key in values.keys()])
-        # print('%(phone)s')
         sql = 'insert into %s(%s) values(%s)' % \
               (table_name,
                ','.join(values.keys()),
-               ','.join([str(v) for v in values.values()]))
+               ','.join(["'" + v + "'"  for v in values.values()]))
 
         with self.db as c:
+            print('values=======',values)
             c.execute(sql,args=values)
+
         api_logger.info('insert %s ok!' % sql)
 
     def delete(self, table_name, by_id):
