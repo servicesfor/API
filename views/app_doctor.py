@@ -33,13 +33,23 @@ def doct_list(depid):
     })
 
 @blue1.route('/ask_doctor/<docid>/detail/',methods=("GET",))
-def doct_detail(docid):     #医生履历
+def doctor_resume(docid):     #医生履历
     dao = DoctorDao()
-    doc_detail = dao.doct_detail(docid)     #医生履历查询
+    doc_detail = dao.doct_resume(docid)     #医生履历查询
     return jsonify({
         "code":200,
-        "msg":"获取医生详情成功",
+        "msg":"获取医生履历成功",
         "doc_detail":doc_detail
+    })
+
+@blue1.route('/ask_doctor/<doc_id>/resume/',methods=('GET',))
+def doct_detail(doc_id):        #医生详情
+    dao = DoctorDao()
+    doct_data = dao.doctor_detail(doc_id)
+    return jsonify({
+        "code":200,
+        "msg":"获取医生详情成功！",
+        "data":doct_data
     })
 
 # @blue1.route('/hospital/',methods=("GET"))

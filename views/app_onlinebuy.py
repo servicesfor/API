@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request, jsonify
 
-from dao.drug_dao import DrugsDao
+from dao.medicine_dao import MedicineDao
 from logger import api_logger
 from datetime import datetime
 from libs import cache
@@ -10,8 +10,8 @@ from libs.sms import *
 blue = Blueprint('app_onlinebuy', __name__)
 
 @blue.route('/medc_illness/',methods=('GET',))
-def buy_drug():
-    dao = DrugsDao()
+def medc_illness():
+    dao = MedicineDao()
     data = dao.find_illness()
 
     return jsonify({
@@ -20,8 +20,10 @@ def buy_drug():
         "data":data
     })
 
-@blue.route('/drug_details/',methods=('GET',))
-def drug_details():
+@blue.route('/ill_medicine/<ill_id>/',methods=('GET',))
+def medicine_sort(ill_id):
+
+
     return jsonify({
         "code": 200,
         "msg": "验证码发送成功",

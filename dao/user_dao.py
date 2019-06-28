@@ -1,4 +1,6 @@
+import datetime
 import random
+
 
 from dao import BaseDao
 from logger import api_logger
@@ -10,8 +12,9 @@ class UserDao(BaseDao):
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
 
-        values['login_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
-        # values['login_auth_str'] = make_password(values['login_auth_str'])
+        values['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
+        values['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+        values['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
         return super(UserDao, self).save('yl_user', **values)
 
     def check_login_name(self, phone):
@@ -34,17 +37,20 @@ class UserDao(BaseDao):
 
     def login_data(self,phone):
         sql = 'select * from yl_user ' \
-              'where phone=%s and activated=%s'
-        user_data = self.query(sql, phone, 1)  # 获取用户表中的用户id和口令
-        # print(user_data, '======================asrfda')
+              'where phone=%s and activated=%s '
+        user_data = self.query(sql, phone, 1) # 获取用户表中的用户id和口令
         return user_data
 
+    def focus_doctors(self,user_id):
+        sql = 'select count(*) as my_focus from user_doc where user_id=%s'
+        return self.query(sql,user_id)[0]["my_focus"]
+
 if __name__ == '__main__':
-    ofc_dict = {
-        "common_ofc_id": [i for i in range(1, 10)],  # 常见科室id
-        "nei_ofc_id": [6, 24, 25, 26, 27],  # 内科
-        "wai_ofc_id": [4, 15, 16, 17, 19, 20],  # 外科
-        "other_ofc_id": [10, 11, 12, 13, 14, 18, 21, 22, 23],  # 其他科室
-    }
-    ofc_list = ofc_dict.keys()
-    print(ofc_list)
+    values = {}
+
+    values['create_time'] = datetime.datetime.strftime(datetime.datetime.now(),'%Y-%m-%d %H:%M:%S')
+    print(values)
+
+
+
+

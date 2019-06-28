@@ -5,22 +5,29 @@ from logger import api_logger
 
 class DoctorDao(BaseDao):   #问医生dao
     def find_ofc(self,ofc_list):     #查科室dao
-        ofc_data = {}           #创建科室数据字典
+        ofc_data = {}        #创建科室数据字典
+        ofcs_list = []
         ofcs = []                  #创建小科室列表
         #查询科室数据库
         sql = 'select * from departments ' \
               'where id=%s'
-        keys = ["common_ofc","nei_ofc","wai_ofc","other_ofc"]   #小科室分类名称
+       #小科室分类名称
+        title = ['常见科室','内科','外科','其他']
         for i in range(len(ofc_list)):
             for j in ofc_list[i]:
-                ofc = self.query(sql,j)[0] # 获取用户表中的用户id和口令
+                ofc = self.query(sql,j)[0]# 获取用户表中的用户id和口令
+
                 if i == 0:
                     #添加常见科室图标
                     ofc['img'] = url_for('static',filename="ofc_img/" + str(j) + ".png")
                 ofcs.append(ofc)   #汇总科室分类
-            ofc_data[keys[i]] = ofcs
+            ofc_data["title"] = title[i]
+            ofc_data['departments_info'] = ofcs
+            ofcs_list.append(ofc_data)
             ofcs = []
-        return ofc_data
+            ofc_data = {}
+
+        return ofcs_list
 
     def find_doct(self,id):         #查询医生列表
         doct_dict = {}
@@ -61,7 +68,7 @@ class DoctorDao(BaseDao):   #问医生dao
 
         return doct_dict
 
-    def doct_detail(self, id):  # 医生履历
+    def doct_resume(self, id):  # 医生履历
         doct_dict = {}
         sql1 = '''               
         select doc.doc_name,doc_img,doc_title,doc_goods,doc_resume,dep.name as dep_name 
@@ -102,6 +109,45 @@ class DoctorDao(BaseDao):   #问医生dao
 
         return doct_dict
 
+    def doctor_detail(self, id):  # 医生详情页面
+        doct_dic = {}
+        sql1 = '''
+        select doc.doc_name,doc_img,doc_title,doc_exp,doc.id as doc_id,qua.m_answer,d_level,avg_response,
+        is_recommend,text_price,tel_price from doctor_quality as qua inner join doctors 
+        as doc on doc.id=qua.d_name_id and doc.id=%s;
+        '''  # 医生表，医生相关属性表查询医生名、头像、职称、从业时间、月回答、医生等级、平均响应、是否力荐、图文问诊、电话问诊
+        sql2 = '''
+        select dep.name as dep_name from departments as dep 
+        inner join doctors as doc on doc.department_id=dep.id and doc.id=%s;
+        '''  # 医生表，科室表查询医生科室名
+        sql3 = '''
+        select hos.hosp_name,hosp_level from hospitals as hos 
+        inner join doctors as doc on doc.hospital_id and doc.id=%s;
+        '''  # 医生表，医院表查询医院名、医院等级
+        sql4 = '''
+        select adv.anonymous,adv_con,comm_time from user_adv_info as adv 
+        inner join doctors as doc on adv.doc_id=doc.id and doc.id=%s;      
+         '''  # 医生表，咨询表查询用户匿名、咨询信息、咨询时间
+        data = self.query(sql1, id)
+        data1 = self.query(sql2, id)
+        data2 = self.query(sql3, id)
+        data3 = self.query(sql4, id)
+        doct_dic["doc_det_info"] = data[0]
+        if data1:
+            doct_dic["doc_info"] = data1[0]
+        else:
+            doct_dic["doc_info"] = ''
+        if data2:
+            doct_dic["doc_dep"] = data2[0]
+        else:
+            doct_dic["doc_dep"] = ''
+
+        if data3:
+            doct_dic["user_comm"] = data3
+        else:
+            doct_dic["user_comm"] = ''
+
+        return doct_dic
 
 
 
