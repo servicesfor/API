@@ -36,6 +36,7 @@ class DoctorDao(BaseDao):   #问医生dao
             from doctors as doc inner join hospitals as hop on doc.hospital_id=hop.id   
             and doc.id=%s;
                 """
+
         sql3 = """
             select d_level,m_answer,m_recipel,avg_response,is_recommend,text_price,tel_price
             from doctors as doc inner join doctor_quality as qua on qua.d_name_id=doc.id   
