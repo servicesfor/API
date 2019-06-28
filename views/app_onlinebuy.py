@@ -6,7 +6,7 @@ from datetime import datetime
 from libs import cache
 from libs.sms import *
 
-blue = Blueprint('user_api', __name__)
+blue = Blueprint('app_onlinebuy', __name__)
 
 @blue.route('/buy_drug/',methods=('GET',))
 def buy_drug():
