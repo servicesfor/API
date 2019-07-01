@@ -1,8 +1,6 @@
 from flask import Blueprint
 from flask import request, jsonify
 import datetime
-from libs.cache import new_token, save_token
-from logger import api_logger
 from dao.user_dao import UserDao
 from libs import cache
 from libs.sms import *

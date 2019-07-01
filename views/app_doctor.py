@@ -2,9 +2,9 @@ from flask import Blueprint, jsonify
 
 from dao.doctor_dao import DoctorDao
 
-blue1 = Blueprint("doctor_api",__name__)
+blue = Blueprint("doctor_api",__name__)
 
-@blue1.route('/ask_doctor/',methods=('GET',))
+@blue.route('/ask_doctor/',methods=('GET',))
 def ask_doctor():
     #科室id列表
     ofc_list = [[i for i in range(1, 10)],
@@ -21,7 +21,7 @@ def ask_doctor():
         'ofc_data':ofc_data
     })
 
-@blue1.route('/ask_doctor/<int:depid>/<int:page_num>/',methods=('GET',))
+@blue.route('/ask_doctor/<int:depid>/<int:page_num>/',methods=('GET',))
 def doct_list(depid,page_num):
     values = {"depid":depid,"page_num":page_num}
     dao = DoctorDao()
@@ -33,7 +33,7 @@ def doct_list(depid,page_num):
         "doct_data":doct_data
     })
 
-@blue1.route('/ask_doctor/<docid>/detail/',methods=("GET",))
+@blue.route('/ask_doctor/<docid>/detail/',methods=("GET",))
 def doctor_resume(docid):     #医生履历
     dao = DoctorDao()
     doc_detail = dao.doct_resume(docid)     #医生履历查询
@@ -43,7 +43,7 @@ def doctor_resume(docid):     #医生履历
         "doc_detail":doc_detail
     })
 
-@blue1.route('/ask_doctor/<doc_id>/resume/',methods=('GET',))
+@blue.route('/ask_doctor/<doc_id>/resume/',methods=('GET',))
 def doct_detail(doc_id):        #医生详情
     dao = DoctorDao()
     doct_data = dao.doctor_detail(doc_id)
