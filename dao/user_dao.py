@@ -1,5 +1,4 @@
 import datetime
-import random
 
 
 from dao import BaseDao
@@ -12,15 +11,14 @@ class UserDao(BaseDao):
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
 
-        values['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
-        values['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+
         values['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+        values['activated'] = "1"
         return super(UserDao, self).save('yl_user', **values)
 
     def check_login_name(self, phone):
         # 检查用户名是否已存在
-        result = self.query('select id as cnt from yl_user where phone=%s', phone)
-        print(result)
+        result = self.query('select id  from yl_user where phone=%s', phone)
         return  bool(result)        #已存在返回True
 
     def login_str(self, phone, login_auth_str):
@@ -42,7 +40,7 @@ class UserDao(BaseDao):
         return user_data
 
     def focus_doctors(self,user_id):
-        sql = 'select count(*) as my_focus from user_doc where user_id=%s'
+        sql = 'select count(*) as my_focus from focus_doc where user_id=%s'
         return self.query(sql,user_id)[0]["my_focus"]
 
 if __name__ == '__main__':

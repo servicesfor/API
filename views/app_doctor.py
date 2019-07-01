@@ -21,10 +21,11 @@ def ask_doctor():
         'ofc_data':ofc_data
     })
 
-@blue1.route('/ask_doctor/<depid>/',methods=('GET',))
-def doct_list(depid):
+@blue1.route('/ask_doctor/<int:depid>/<int:page_num>/',methods=('GET',))
+def doct_list(depid,page_num):
+    values = {"depid":depid,"page_num":page_num}
     dao = DoctorDao()
-    doct_data = dao.find_doct(depid)
+    doct_data = dao.find_doct(**values)
 
     return jsonify({
         "code":200,

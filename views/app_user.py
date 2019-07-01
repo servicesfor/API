@@ -1,10 +1,9 @@
 from flask import Blueprint
 from flask import request, jsonify
-
+import datetime
 from libs.cache import new_token, save_token
 from logger import api_logger
 from dao.user_dao import UserDao
-from datetime import datetime
 from libs import cache
 from libs.sms import *
 
@@ -22,36 +21,28 @@ def send_code():
 @blue.route('/login_code/', methods=('POST',))
 def login_code():
     # 前端请求的Content-Type: application/json
-    req_data = None
-    api_logger.info(request.headers)
-    if request.headers['Content-Type'].startswith('application/json'):
-        req_data = request.get_json()
 
-    if req_data is None:
-        api_logger.warn('%s 请求参数未上传-json' % request.remote_addr)
-        return jsonify({
-            'code': 9000,
-            'msg': '请上传json数据，且参数必须按api接口标准给定'
-        })
 
-    api_logger.debug(req_data)
-
-    phone = req_data['phone']
-    input_code = req_data['input_code']
+    phone = request.form.get('phone')
+    input_code = request.form.get('input_code')
     # 验证上传的必须的数据是否存在
     if not confirm(phone,input_code):   #验证验证码是否一致
         return jsonify({
             "code":400,
             "msg":"验证码输入错误,请重新输入",
         })
-    req_data.pop('input_code')      #验证通过之后将验证码从req_data中删除
+    req_data = {"phone":phone}    #验证通过之后将验证码从req_data中删除
     dao = UserDao()
     if dao.check_login_name(phone):     #检测用户名是否存在
 
         result = dao.login_data(phone)      #已存在则直接读取数据库数据
         result[0].pop('login_auth_str')
-        result[0]["my_focus"] = dao.focus_doctors(result['id'])
+        result[0]["my_focus"] = dao.focus_doctors(result[0]['id'])
     else:
+        req_data['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
+        req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+        req_data['photo'] = 'http://img2.imgtn.bdimg.com/it/u=1813493607,361824557&fm=26&gp=0.jpg'
+        req_data['login_auth_str'] = '677698c118bf5e6974f19fd2eb2a5b67'
         dao.save(**req_data)                #不存在则存入数据库中,在读取数据
         result = dao.login_data(phone)
     token = cache.new_token()       #设置新token
@@ -65,23 +56,8 @@ def login_code():
 @blue.route('/login_str/', methods=('POST',))
 def login_str():
     # 前端请求的Content-Type: application/json
-    req_data = None
-    api_logger.info(request.headers)
-    if request.headers['Content-Type'].startswith('application/json'):
-        req_data = request.get_json()
-
-    if req_data is None:
-        api_logger.warn('%s 请求参数未上传-json' % request.remote_addr)
-        return jsonify({
-            'code': 9000,
-            'msg': '请上传json数据，且参数必须按api接口标准给定'
-        })
-
-    api_logger.debug(req_data)
-
-    phone = req_data['phone']
-    auth_str = req_data.get('auth_str')
-    # 验证上传的必须的数据是否存在
+    phone = request.form.get('phone')
+    auth_str = request.form.get('auth_str')
 
     dao = UserDao()
     if dao.check_login_name(phone):         #检测用户名是否存在

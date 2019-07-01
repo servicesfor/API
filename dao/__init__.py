@@ -4,7 +4,7 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    'host': 'localhost',
+    'host': '121.199.63.71',
     'port': 3306,
     'user': 'yladmin',
     'password': 'yl123',
@@ -46,7 +46,6 @@ class BaseDao():
                ','.join(["'" + v + "'"  for v in values.values()]))
 
         with self.db as c:
-            print('values=======',values)
             c.execute(sql,args=values)
 
         api_logger.info('insert %s ok!' % sql)
