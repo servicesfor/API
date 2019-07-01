@@ -16,12 +16,12 @@ class DoctorDao(BaseDao):  # 问医生dao
         title = ['常见科室', '内科', '外科', '其他']
         for i in range(len(ofc_list)):
             for j in ofc_list[i]:
-                ofc = self.query(sql, j)  # 获取用户表中的用户id和口令
+                ofc = self.query(sql, j)
 
                 if i == 0:
                     # 添加常见科室图标
                     ofc[0]['img'] = url_for('static', filename="ofc_img/" + str(j) + ".png")
-                ofcs.append(ofc)  # 汇总科室分类
+                ofcs.append(ofc[0])  # 汇总科室分类
             ofc_data["title"] = title[i]
             ofc_data['departments_info'] = ofcs
             ofcs_list.append(ofc_data)
@@ -30,49 +30,53 @@ class DoctorDao(BaseDao):  # 问医生dao
 
         return ofcs_list
 
-    def find_doct(self, **values):  # 查询医生列表
-        doct_dict = {}
-        # 查询医生id,name,照片,
+    def find_doct(self, depid):  # 查询医生列表
+
+        # 查询医生id,name,照片,科室名称,职称,擅长方向
         sql1 = """
-                select * from (select doc.id,doc.doc_name ,dep.name,doc.doc_img,doc_title,doc_goods
+                select doc.id,doc.doc_name ,dep.name,doc.doc_img,doc_title,doc_goods
                 from doctors as doc inner join departments as dep 
                 on doc.department_id=dep.id 
-                and dep.id=%(depid)s) limit (%(page_num)s - 1)* 20 ,%(page_num)s * 20 ;
+                and dep.id=%s;
                 """
-
+        # 查询医院名称
         sql2 = """
-                select * from (select hop.hosp_name
+                select hop.hosp_name
                 from doctors as doc inner join hospitals as hop 
                 on doc.hospital_id=hop.id   
-                and doc.id=%(depid)s) limit (%(page_num)s - 1)* 20 ,%(page_num)s * 20  ;
+                and doc.id=%s ;
                 """
-
+        # 查询医生星级,月回答次数,月处方数,回复时间,是否力荐,图文价格,电话问诊价格
         sql3 = """
-                select * from (select d_level,m_answer,m_recipel,avg_response,is_recommend,text_price,tel_price
+                select d_level,m_answer,m_recipel,avg_response,is_recommend,text_price,tel_price
                 from doctors as doc inner join doctor_quality as qua 
                 on qua.d_name_id=doc.id   
-                and doc.id=%(depid)s) limit (%(page_num)s - 1)* 20 ,%(page_num)s * 20  ;
+                and doc.id=%s ;
                 """
-        data = self.query(sql1,**values)
+        data = self.query(sql1, depid)  # 查询科室id对应的医生列表
 
         for i in range(len(data)):
-            doct_id = data[i]['id']
+            doct_id = data[i]['id']  # 遍历每个医生的id
 
-            data1 = self.query(sql2,**values)
-            data2 = self.query(sql3,**values)
-            data[i]["d_level"] = data2
+            data1 = self.query(sql2, doct_id)  # 查询每个医生所属医院
+            data2 = self.query(sql3, doct_id)  # 查询每个医生的详细信息
+            data[i]["avg_response"] = data2[0]['avg_response']  # 回复时间
+            data[i]["d_level"] = data2[0]['d_level']  # 医生星级
+            data[i]["is_recommend"] = data2[0]['is_recommend']  # 是否力荐
+            data[i]["m_answer"] = data2[0]['m_answer']  # 月回答次数
+            data[i]["m_recipel"] = data2[0]['m_recipel']  # 月处方数
+            data[i]["tel_price"] = data2[0]['tel_price']  # 电话问诊费用
+            data[i]["text_price"] = data2[0]['text_price']  # 图文问诊费用
             if data1:
-                s = data1[0]['hosp_name']
-                data[i]["hop_name"] = s
+                # 所属医院
+                data[i]["hop_name"] = data1[0]['hosp_name']
             else:
                 data[i]["hop_name"] = ''
 
-            doct_dict[doct_id] = data[i]
-
-        return doct_dict
+        return data
 
     def doct_resume(self, id):  # 医生履历
-        doct_dict = {}
+
         sql1 = '''               
         select doc.doc_name,doc_img,doc_title,doc_goods,doc_resume,dep.name as dep_name 
         from doctors as doc inner join departments as dep on doc.department_id=dep.id 
@@ -103,14 +107,11 @@ class DoctorDao(BaseDao):  # 问医生dao
                 data[i]["is_recommend"] = ''
                 # 如果没有力荐,则添加空字符串为value
             if data2:
-                s = data2[0]  # 将医院详情提取出来加入到data中
-                data[i]['hosp_detail'] = s
+                # 将医院详情提取出来加入到data中
+                data.append(data2[0])
             else:
-                data[i]['hosp_detail'] = ''
-
-            doct_dict[id] = data[i]
-
-        return doct_dict
+                data.append([])
+        return data
 
     def doctor_detail(self, id):  # 医生详情页面
         doct_dic = {}
@@ -151,4 +152,3 @@ class DoctorDao(BaseDao):  # 问医生dao
             doct_dic["user_comm"] = ''
 
         return doct_dic
-
