@@ -11,9 +11,6 @@ class UserDao(BaseDao):
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
 
-
-        values['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
-        values['activated'] = "1"
         return super(UserDao, self).save('yl_user', **values)
 
     def check_login_name(self, phone):
@@ -42,6 +39,18 @@ class UserDao(BaseDao):
     def focus_doctors(self,user_id):
         sql = 'select count(*) as my_focus from focus_doc where user_id=%s'
         return self.query(sql,user_id)[0]["my_focus"]
+
+    def patient_list(self,user_id):  # 患者列表
+        sql = '''SELECT id,p_name,p_sex,(YEAR(CURDATE()) - YEAR(date_birth)) as age,p_weight from patient where p_user_id=%s;
+        '''
+        return self.query(sql,user_id)
+
+    def update_name(self, nick_name, userid):  # 更改用户昵称
+        sql1 = "UPDATE yl_user SET nick_name='%s'" % nick_name + " WHERE id = '%s'" % (userid);
+        sql2 = "update yl_user set update_time=now() where id =%s" % (userid)
+        self.query(sql1)
+        self.query(sql2)
+
 
 if __name__ == '__main__':
     values = {}

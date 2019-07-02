@@ -41,6 +41,8 @@ def login_code():
         req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
         req_data['photo'] = 'http://img2.imgtn.bdimg.com/it/u=1813493607,361824557&fm=26&gp=0.jpg'
         req_data['login_auth_str'] = '677698c118bf5e6974f19fd2eb2a5b67'
+        req_data['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+        req_data['activated'] = "1"
         dao.save(**req_data)                #不存在则存入数据库中,在读取数据
         result = dao.login_data(phone)
     token = cache.new_token()       #设置新token

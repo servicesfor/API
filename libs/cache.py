@@ -22,3 +22,7 @@ def get_token_user_id(token):
     if check_token(token):
         return rd.get(token).decode()
 
+if __name__ == '__main__':
+    s = new_token()
+    save_token(s,4)
+    print(s,'保存token成功')
