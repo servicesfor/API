@@ -12,7 +12,7 @@ blue = Blueprint("doctor_api",__name__)
 def ask_doctor():
     #科室id列表
     ofc_list = [[i for i in range(1, 10)],
-                [6, 24, 25, 26, 27],
+                [6, 24, 25, 26, 27,28],
                 [4, 15, 16, 17, 19, 20] ,
                 [10, 11, 12, 13, 14, 18, 21, 22, 23]]
 
