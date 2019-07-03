@@ -88,7 +88,7 @@ class DoctorDao(BaseDao):  # 问医生dao
         and doctors.id=%s;
         '''  # 通过医生查询医生详情表   是否力荐
         sql3 = '''
-        select hos.hosp_name,hosp_addr,hosp_tel,medical_insurance,hosp_level 
+        select hos.hosp_name,hosp_addr,hosp_tel,medical_insurance,hosp_level ,hos.id
         from hospitals as hos inner join doctors on doctors.hospital_id=hos.id 
         and doctors.id=%s;
         '''  # 通过医生表查询医院     医院名，地址，电话，医保，等级
@@ -125,7 +125,7 @@ class DoctorDao(BaseDao):  # 问医生dao
            inner join doctors as doc on doc.department_id=dep.id and doc.id=%s;
            '''  # 医生表，科室表查询医生科室名
         sql3 = '''
-           select hos.hosp_name,hosp_level from hospitals as hos 
+           select hos.hosp_name,hosp_level,hos.id from hospitals as hos 
            inner join doctors as doc on doc.hospital_id and doc.id=%s;
            '''  # 医生表，医院表查询医院名、医院等级
         sql4 = '''

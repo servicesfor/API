@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, request
 from dao import BaseDao
 from dao.doctor_dao import DoctorDao
 from dao.user_dao import UserDao
-from libs import rd
 from libs.cache import get_token_user_id
 
 blue = Blueprint("doctor_api",__name__)

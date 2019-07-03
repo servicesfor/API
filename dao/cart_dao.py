@@ -108,12 +108,10 @@ class CartDao(BaseDao):
         NOT_SELECT_PRICE = self.not_select(user_id)
         #计算购物车中所有选中药品的总价=总价-未被选中药品的总价
         SUM_PRICE -= NOT_SELECT_PRICE
-        data1 ={
+        return {
             "data":data,
             "sum_price":SUM_PRICE
         }
-
-        return data1
 
     def not_select(self,user_id):       #未被选中药品的总价计算
         #查询药品的数量和单价

@@ -3,6 +3,7 @@ from flask import request, jsonify
 import datetime
 from dao.user_dao import UserDao
 from libs import cache
+from libs.cache import get_token_user_id
 from libs.sms import *
 
 blue = Blueprint('user_api', __name__)
@@ -63,3 +64,15 @@ def login_str():
         'code': 406,
         'msg': '用户名或密码输入错误',
     })
+
+@blue.route('/mine/', methods=('GET',))
+def mine():
+    req_data = request.get_json()
+    if not req_data['token']:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+
+

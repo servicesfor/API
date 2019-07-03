@@ -1,7 +1,8 @@
 from apps import app
 
 
-from views import app_user, app_doctor, app_medicine, app_oneask, app_cart, app_hospital
+from views import *
+
 
 APP_CONFIG={
     'host': '0.0.0.0',
@@ -16,6 +17,9 @@ if __name__ == '__main__':
     app.register_blueprint(app_oneask.blue)
     app.register_blueprint(app_cart.blue)
     app.register_blueprint(app_hospital.blue)
+    app.register_blueprint(app_diseases.blue)
+    app.register_blueprint(app_order.blue)
+    app.register_blueprint(app_article.blue)
 
     app.run(**APP_CONFIG)
 

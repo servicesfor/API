@@ -9,7 +9,7 @@ blue = Blueprint("cart_api",__name__)
 @blue.route('/add_cart/',methods=('GET',))      #添加购物车接口
 def add_cart():
     req_data = request.get_json()
-    print(req_data,'======')
+
     if not req_data['token']:
         return jsonify({
             "code": 400,
@@ -52,15 +52,14 @@ def sub_cart():
 
 @blue.route('/cart_details/', methods=('GET',))     #购物车详情接口
 def cart_detl():
-    req_data = request.get_json()
-    # print(req_data, '======')
-    if not req_data['token']:
-        return jsonify({
-            "code": 400,
-            "msg": "您还未登录,请先登录!"
-        })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
-    # user_id = 4
+    # req_data = request.get_json()
+    # if not req_data['token']:
+    #     return jsonify({
+    #         "code": 400,
+    #         "msg": "您还未登录,请先登录!"
+    #     })
+    # user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    user_id = 4
     dao = CartDao()
     data = dao.cart_details(user_id)
     return jsonify({
