@@ -2,10 +2,7 @@ from flask import Blueprint
 from flask import request, jsonify
 
 from dao.medicine_dao import MedicineDao
-from logger import api_logger
-from datetime import datetime
-from libs import cache
-from libs.sms import *
+
 
 blue = Blueprint('app_medicine', __name__)
 
