@@ -114,41 +114,37 @@ class DoctorDao(BaseDao):  # 问医生dao
         return data
 
     def doctor_detail(self, id):  # 医生详情页面
-        doct_dic = {}
+        doct_dic = []
         sql1 = '''
-        select doc.doc_name,doc_img,doc_title,doc_exp,doc.id as doc_id,qua.m_answer,d_level,avg_response,
-        is_recommend,text_price,tel_price from doctor_quality as qua inner join doctors 
-        as doc on doc.id=qua.d_name_id and doc.id=%s;
-        '''  # 医生表，医生相关属性表查询医生名、头像、职称、从业时间、月回答、医生等级、平均响应、是否力荐、图文问诊、电话问诊
+           select doc.doc_name,doc_img,doc_title,doc_exp,doc.id as doc_id,qua.m_answer,d_level,avg_response,
+           is_recommend,text_price,tel_price from doctor_quality as qua inner join doctors 
+           as doc on doc.id=qua.d_name_id and doc.id=%s;
+           '''  # 医生表，医生相关属性表查询医生名、头像、职称、从业时间、月回答、医生等级、平均响应、是否力荐、图文问诊、电话问诊
         sql2 = '''
-        select dep.name as dep_name from departments as dep 
-        inner join doctors as doc on doc.department_id=dep.id and doc.id=%s;
-        '''  # 医生表，科室表查询医生科室名
+           select dep.name as dep_name from departments as dep 
+           inner join doctors as doc on doc.department_id=dep.id and doc.id=%s;
+           '''  # 医生表，科室表查询医生科室名
         sql3 = '''
-        select hos.hosp_name,hosp_level from hospitals as hos 
-        inner join doctors as doc on doc.hospital_id and doc.id=%s;
-        '''  # 医生表，医院表查询医院名、医院等级
+           select hos.hosp_name,hosp_level from hospitals as hos 
+           inner join doctors as doc on doc.hospital_id and doc.id=%s;
+           '''  # 医生表，医院表查询医院名、医院等级
         sql4 = '''
-        select adv.anonymous,adv_con,comm_time from user_adv_info as adv 
-        inner join doctors as doc on adv.doc_id=doc.id and doc.id=%s;      
-         '''  # 医生表，咨询表查询用户匿名、咨询信息、咨询时间
+           select adv.doc_con,doc_time from doc_adv as adv 
+           inner join doctors as doc on adv.doc_adv_id=doc.id and doc.id=%s;      
+            '''  # 医生表，咨询表查询用户匿名、咨询信息、咨询时间
         data = self.query(sql1, id)
         data1 = self.query(sql2, id)
         data2 = self.query(sql3, id)
         data3 = self.query(sql4, id)
-        doct_dic["doc_det_info"] = data[0]
+        doct_dic.append(data[0])
         if data1:
-            doct_dic["doc_info"] = data1[0]
-        else:
-            doct_dic["doc_info"] = ''
+            doct_dic.append(data1[0])
         if data2:
-            doct_dic["doc_dep"] = data2[0]
-        else:
-            doct_dic["doc_dep"] = ''
-
-        if data3:
-            doct_dic["user_comm"] = data3
-        else:
-            doct_dic["user_comm"] = ''
-
+            doct_dic.append(data2[0])
+        if not data3:
+            doct_dic.append('暂无提问')
+            return doct_dic
+        for i in range(len(data3)):
+            data3[i]['u_name'] = '匿名用户'
+            doct_dic.append(data3)
         return doct_dic
