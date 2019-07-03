@@ -1,17 +1,18 @@
 from flask import Blueprint, jsonify
 
-blue2 = Blueprint("hospital_api", __name__)
+from dao.hospital_dao import HospitalDao
 
-#
-# @blue2.route('/hospital/', methods=("GET"))
-# def hospital():
-#
-#
-# @blue2.route('/article/', methods=('GET',))
-# def article():
-#
-#
-# @blue2.route('/diseases/', methods=('GET',))
-# def find_diseases():
+blue = Blueprint("hospital_api", __name__)
+
+
+@blue.route('/hospital_detail/<hospid>/', methods=("GET",))     #医院详情API
+def hospital(hospid):
+    dao = HospitalDao()
+    hosp = dao.hosp_detail(hospid)
+    return jsonify({
+        "code":200,
+        "msg":"获取医院信息成功！",
+        "hosp":hosp
+    })
 
 

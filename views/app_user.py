@@ -19,8 +19,6 @@ def send_code():
 @blue.route('/login_code/', methods=('POST',))
 def login_code():
     # 前端请求的Content-Type: application/json
-
-
     phone = request.form.get('phone')
     input_code = request.form.get('input_code')
     # 验证上传的必须的数据是否存在
@@ -31,12 +29,7 @@ def login_code():
         })
     req_data = {"phone":phone}    #验证通过之后将验证码从req_data中删除
     dao = UserDao()
-    if dao.check_login_name(phone):     #检测用户名是否存在
-
-        result = dao.login_data(phone)      #已存在则直接读取数据库数据
-        result[0].pop('login_auth_str')
-        result[0]["my_focus"] = dao.focus_doctors(result[0]['id'])
-    else:
+    if not dao.check_login_name(phone):     #检测用户名是否存在
         req_data['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
         req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
         req_data['photo'] = 'http://img2.imgtn.bdimg.com/it/u=1813493607,361824557&fm=26&gp=0.jpg'
@@ -44,32 +37,27 @@ def login_code():
         req_data['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
         req_data['activated'] = "1"
         dao.save(**req_data)                #不存在则存入数据库中,在读取数据
-        result = dao.login_data(phone)
+
     token = cache.new_token()       #设置新token
     return jsonify({
         'code': 200,
         'msg': 'ok',
         'token':token,
-        'data': result
     })
 
 @blue.route('/login_str/', methods=('POST',))
 def login_str():
-    # 前端请求的Content-Type: application/json
     phone = request.form.get('phone')
     auth_str = request.form.get('auth_str')
 
     dao = UserDao()
     if dao.check_login_name(phone):         #检测用户名是否存在
         if dao.login_str(phone,auth_str):       #检测密码是否正确
-            login_data = dao.login_data(phone)
-            login_data[0].pop('login_auth_str')
             token = cache.new_token()
             return jsonify({
                 'code': 200,
                 'msg': 'ok',
                 'token':token,
-                'data': login_data
             })
     return jsonify({
         'code': 406,

@@ -64,7 +64,7 @@ class MedicineDao(BaseDao):
 
     def medicine_details(self, med_id):  # 通过药品id查询药品详情
         sql = """
-        select med.id as med_id, med_name as '药品名', med_img, price, med_stock as '库存', approval_number as '国药准字', packing_size as '包装规格', med_formulation as '剂型', composition as '药品成分', shape as '性状', indications as '适应症', pdc_date as '生产日期', validity_period as '有效期', manufacturer as '制造商', med_interact as '药品相互作用', attentions as '注意事项', taboo as '禁忌', reaction as '不良反应', pharm_toxicity as '药理毒理', det.storage as '贮藏'
+        select med.id as med_id, med_name , med_img, price, med_stock , approval_number , packing_size , med_formulation, composition , shape, indications, pdc_date, validity_period , manufacturer , med_interact , attentions , taboo , reaction, pharm_toxicity , det.storage
         from medicine as med inner join med_details as det
         on med.id=det.med_name_id
         and med.id=%s
