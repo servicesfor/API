@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request
 
-from dao.cart_dao import CartDao
+
 from dao.order_dao import OrderDao
 from libs.cache import get_token_user_id
 
@@ -47,16 +47,15 @@ blue = Blueprint("order_api",__name__)
 
 @blue.route('/create_order/',methods=('GET',))
 def create_order():
-    # req_data = request.get_json()
-    #
-    # if not req_data['token']:
-    #     return jsonify({
-    #         "code": 400,
-    #         "msg": "您还未登录,请先登录!"
-    #     })
-    # user_id = get_token_user_id(req_data['token'])  # 通过token获取id
-    # o_price = req_data['o_price']
-    user_id = 4
+    req_data = request.get_json()
+
+    if not req_data['token']:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    # user_id = 4
     dao = OrderDao()
     dao.create_order(user_id)
     data = dao.order_data(user_id)

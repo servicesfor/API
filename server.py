@@ -20,6 +20,7 @@ if __name__ == '__main__':
     app.register_blueprint(app_diseases.blue)
     app.register_blueprint(app_order.blue)
     app.register_blueprint(app_article.blue)
+    app.register_blueprint(app_receive.blue)
 
     app.run(**APP_CONFIG)
 
