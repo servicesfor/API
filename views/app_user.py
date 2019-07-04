@@ -47,11 +47,8 @@ def login_code():
         req_data['activated'] = "1"
         dao.save(**req_data)                #不存在则存入数据库中,在读取数据
     user_id = dao.find_userid(phone)
-    print(user_id,"前面的")
     token = cache.new_token()       #设置新token
     save_token(token,user_id)
-    user_id = get_token_user_id(token)
-    print(user_id,'********************')
     return jsonify({
         'code': 200,
         'msg': 'ok',
