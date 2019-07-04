@@ -9,6 +9,9 @@ from libs.crypt import make_password, check_password
 
 
 class UserDao(BaseDao):
+    def find_userid(self,phone):
+        return self.query("select id as user_id "\
+                          "from yl_user where phone=%s",phone)[0]["user_id"]
 
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
@@ -101,7 +104,7 @@ class UserDao(BaseDao):
         return "发送验证码成功!"
 
     def update_Verifi(self, phone, user_id):
-        sql1 = "update yl_user set phone='%s' where id=%s;" % (phone, id)
+        sql1 = "update yl_user set phone='%s' where id=%s;" % (phone, user_id)
         self.query(sql1)
         return
 
@@ -154,3 +157,22 @@ class UserDao(BaseDao):
             my_focus.append(data)
 
         return my_focus
+
+    def forget_pwd(self,phone):
+        sql = 'select phone from yl_user where phone=%s;'
+        if not self.query(sql, phone):
+            return '该手机号不存在！'
+        new_code(phone)  # 发送验证码
+        return "发送验证码成功!"
+
+    def new_password(self,auth_str,user_id):
+        self.query("update yl_user set login_auth_str=%s where id=%s")
+
+
+
+
+
+
+
+
+

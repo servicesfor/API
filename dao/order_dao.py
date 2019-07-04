@@ -118,25 +118,23 @@ class OrderDao(BaseDao):
         and o.o_id=%s;
         '''
         sql2 = """
-        select o_med_num,o_med_price,med_img,packing_size,med_name,count(*)as med_kind
+        select o_med_num,o_med_price,med_img,packing_size,med_name
         from order_detail as o_d inner join medicine as med on o_d.o_goods_id=med.id
         and o_d.o_order_id=%s;
         """
-        print(order_id)
+        sql3 = "select count(*)as med_kind from order_detail where o_order_id=%s"
+
         if self.query("select * from yl_receive where r_user_id=%s",user_id):
 
             data = self.query(sql1,order_id)
         else:
             data = self.query("select o_price,o_status,o_id,o_time "\
                               "from orders where o_id=%s",order_id)
-        data1 = self.query(sql2,order_id)
+        data1 = self.query(sql2,order_id)   #查询药品详情
+        data[0]["med_kind"] = self.query(sql3,order_id)[0]["med_kind"]  #添加药品种类
         data.append(data1)
         return data
 
 
-
-if __name__ == '__main__':
-    o_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 获取当前时间
-    print(o_time,type(o_time))
 
 

@@ -35,13 +35,12 @@ class ReceiveDao(BaseDao):
                "where r_user_id=%s limit 1",user_id)
         self.query(sql1, r_id)
 
-    def change_default(self,r_id):
+    def change_default(self,r_id,user_id):
 
         if self.query("select r_default from yl_receive where id=%s",r_id)[0]["r_default"]:
-
-            print(self.query("select r_default from yl_receive where id=%s",r_id)[0])
             return
-        default_id = self.query("select id from yl_receive where r_default=True ")[0]["id"]
+        default_id = self.query("select id from yl_receive where r_default=True"\
+                                " and r_user_id=%s",user_id)[0]["id"]
 
         self.query("update yl_receive set r_default=FALSE " \
                    "where id=%s", default_id)

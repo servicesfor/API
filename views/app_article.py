@@ -4,7 +4,7 @@ from dao.article_dao import ArticleDao
 
 blue = Blueprint("article_api",__name__)
 
-@blue.route('/article/',methods=('GET',))
+@blue.route('/article/',methods=('GET',))       #首页api
 def article_one():
     dao = ArticleDao()
     data = dao.first_page()

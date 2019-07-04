@@ -55,9 +55,10 @@ def change_default():
             "msg": "您还未登录,请先登录!"
         })
     # r_id = 14
+    user_id = get_token_user_id(token)
     r_id = request.args.get('rec_id')
     dao = ReceiveDao()
-    dao.change_default(r_id)
+    dao.change_default(r_id,user_id)
     return jsonify({
         "code":200,
         "msg":"更改默认收货地址成功"
@@ -94,11 +95,11 @@ def edit_receive():
     rec_name = request.form.get("rec_name")
     rec_phone = request.form.get("rec_phone")
     rec_addr = request.form.get("rec_addr")
-    r_id = request.form.get("rec_id")
+    r_id = request.args.get("rec_id")
     # r_id = 14
     dao = ReceiveDao()
     dao.edit_receive(rec_name,rec_phone,rec_addr,r_id)
     return jsonify({
         "code": 200,
-        "msg": "查询收货地址成功",
+        "msg": "编辑收货地址成功",
     })

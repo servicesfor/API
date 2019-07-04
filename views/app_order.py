@@ -8,14 +8,14 @@ from libs.cache import get_token_user_id
 blue = Blueprint("order_api",__name__)
 @blue.route('/order_list/',methods=('GET',))      #订单列表接口
 def order_list():
-    req_data = request.get_json()
+    token = request.args.get("token")
 
-    if not req_data['token']:
+    if not token:
         return jsonify({
             "code": 400,
             "msg": "您还未登录,请先登录!"
         })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    user_id = get_token_user_id(token)  # 通过token获取id
 
     # user_id = 8 # 通过token获取id
     # med_id = 9796

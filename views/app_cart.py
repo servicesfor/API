@@ -16,6 +16,7 @@ def add_cart():
             "msg": "您还未登录,请先登录!"
         })
     user_id = get_token_user_id(token)  # 通过token获取id
+    print(user_id,'=============','%%%%%%%%%%%%%%%%%%%')
     med_id = request.args.get("med_id")
     # user_id = 5 # 通过token获取id
     # med_id = 9796
