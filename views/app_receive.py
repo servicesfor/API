@@ -47,7 +47,24 @@ def del_receive():
         "msg": "删除收货地址成功!"
     })
 
+@blue.route('/change_default/',methods=('GET',))      #更改默认收货地址接口
+def change_default():
+    req_data = request.get_json()
 
+    if not req_data['token']:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    r_id = req_data["r_id"]
+    # r_id = 14
+    dao = ReceiveDao()
+    dao.change_default(r_id)
+    return jsonify({
+        "code":200,
+        "msg":"更改默认收货地址成功"
+    })
 
 
 

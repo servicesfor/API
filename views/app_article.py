@@ -1,10 +1,28 @@
 from flask import Blueprint, jsonify
-
 from dao.article_dao import ArticleDao
 
 
 blue = Blueprint("article_api",__name__)
 
+@blue.route('/article/',methods=('GET',))
+def article_one():
+    dao = ArticleDao()
+    data = dao.first_page()
+    return jsonify({
+        'code': 206,
+        'msg': '首页查询成功',
+        'data':data
+    })
+
+@blue.route('/article/<id>/',methods=('GET',))
+def article_two(id):
+    dao = ArticleDao()
+    data = dao.second_page(id)
+    return jsonify({
+        'code': 206,
+        'msg': '文章查询成功',
+        'data':data
+    })
 
 @blue.route('/science_article/',methods=('GET',))       # 急救大全首页
 def science_article():

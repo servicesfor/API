@@ -1,3 +1,6 @@
+import datetime
+import time
+
 from dao import BaseDao
 import random
 import base64
@@ -65,6 +68,43 @@ class ArticleDao(BaseDao):
         content = data6[0]["content"]
         content = base64.b64decode(content.encode()).decode()
         data6[0]["content"] = content
-        print(content)
         return data6
 
+    def first_page(self):
+        fir_page = {}
+        today_recommend = []
+        recommend = {}
+        recommend1 = {}
+        recommend2 = {}
+        sql = 'select id,art_class,title,title_img from articles where id>=34'
+        data = self.query(sql)
+        articleData = time.strftime('%m{m}%d{d}').format(m='月', d='日')
+        now = datetime.datetime.now()
+        date1 = now + datetime.timedelta(days=-1)
+        date2 = now + datetime.timedelta(days=-2)
+        data1 = date1.strftime('%m{m}%d{d}').format(m='月', d='日')
+        data2 = date2.strftime('%m{m}%d{d}').format(m='月', d='日')
+        recommend["recommend_time"] = articleData
+        recommend1["recommend_time"] = data1
+        recommend2["recommend_time"] = data2
+        recommend["recommend_info"] = data[0:3]
+        recommend1["recommend_info"] = data[3:6]
+        recommend2["recommend_info"] = data[6:9]
+        today_recommend.append(recommend)
+        today_recommend.append(recommend1)
+        today_recommend.append(recommend2)
+        i = random.randint(0, len(data))
+        fir_page["SearchInfo"] = data[i]["title"]
+        url = ['http://special.dxycdn.com/topic/lizy/resource/dxy-com/112v2.png?t=1532414502207',
+               'http://special.dxycdn.com/topic/lizy/resource/dxy-com/127.png?t=1528856982903']
+        fir_page["banner"] = url
+        fir_page["today_recommend"] = today_recommend
+        return fir_page
+
+    def second_page(self, id):
+        sql = 'select title,auth,subjection,content,auth_img from articles where id=%s' % (id)
+        data = self.query(sql)
+        content = data[0]["content"]
+        content = base64.b64decode(content.encode()).decode()
+        data[0]["content"] = content
+        return data
