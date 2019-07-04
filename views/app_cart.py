@@ -8,16 +8,16 @@ from libs.cache import get_token_user_id
 blue = Blueprint("cart_api",__name__)
 @blue.route('/add_cart/',methods=('GET',))      #添加购物车接口
 def add_cart():
-    # token = request.args.get("token")
-    #
-    # if not token:
-    #     return jsonify({
-    #         "code": 400,
-    #         "msg": "您还未登录,请先登录!"
-    #     })
-    # user_id = get_token_user_id(token)  # 通过token获取id
+    token = request.args.get("token")
+
+    if not token:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+    user_id = get_token_user_id(token)  # 通过token获取id
     med_id = request.args.get("med_id")
-    user_id = 5 # 通过token获取id
+    # user_id = 5 # 通过token获取id
     # med_id = 9796
 
     dao = CartDao()
@@ -51,15 +51,15 @@ def sub_cart():
 
 @blue.route('/cart_details/', methods=('GET',))     #购物车详情接口
 def cart_detl():
-    # token = request.args.get("token")
-    #
-    # if not token:
-    #     return jsonify({
-    #         "code": 400,
-    #         "msg": "您还未登录,请先登录!"
-    #     })
-    # user_id = get_token_user_id(token)  # 通过token获取id
-    user_id = 8
+    token = request.args.get("token")
+
+    if not token:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+    user_id = get_token_user_id(token)  # 通过token获取id
+    # user_id = 8
     dao = CartDao()
     data = dao.cart_details(user_id)
     return jsonify({
