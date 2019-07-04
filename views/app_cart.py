@@ -8,15 +8,15 @@ from libs.cache import get_token_user_id
 blue = Blueprint("cart_api",__name__)
 @blue.route('/add_cart/',methods=('GET',))      #添加购物车接口
 def add_cart():
-    req_data = request.get_json()
+    token = request.args.get("token")
 
-    if not req_data['token']:
+    if not token:
         return jsonify({
             "code": 400,
             "msg": "您还未登录,请先登录!"
         })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
-    med_id = req_data['med_id']
+    user_id = get_token_user_id(token)  # 通过token获取id
+    med_id = request.args.get("med_id")
     # user_id = 4 # 通过token获取id
     # med_id = 9796
 
@@ -31,15 +31,14 @@ def add_cart():
 
 @blue.route('/sub_cart/', methods=('GET',))     #删除购物车接口
 def sub_cart():
-    req_data = request.get_json()
-
-    if not req_data['token']:
+    token = request.args.get("token")
+    if not token:
         return jsonify({
             "code": 400,
             "msg": "您还未登录,请先登录!"
         })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
-    med_id = req_data['med_id']
+    user_id = get_token_user_id(token)  # 通过token获取id
+    med_id = request.args.get("med_id")
     # user_id = 4  # 通过token获取id
     # med_id = 9793
     dao = CartDao()
@@ -52,13 +51,14 @@ def sub_cart():
 
 @blue.route('/cart_details/', methods=('GET',))     #购物车详情接口
 def cart_detl():
-    req_data = request.get_json()
-    if not req_data['token']:
+    token = request.args.get("token")
+
+    if not token:
         return jsonify({
             "code": 400,
             "msg": "您还未登录,请先登录!"
         })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    user_id = get_token_user_id(token)  # 通过token获取id
     # user_id = 4
     dao = CartDao()
     data = dao.cart_details(user_id)
@@ -70,15 +70,15 @@ def cart_detl():
 
 @blue.route('/is_select/', methods=('GET',))     #改变是否选中状态API
 def is_select():
-    med_id = request.get_json('med_id')
-    req_data = request.get_json()
+    token = request.args.get("token")
 
-    if not req_data['token']:
+    if not token:
         return jsonify({
             "code": 400,
             "msg": "您还未登录,请先登录!"
         })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
+    user_id = get_token_user_id(token)  # 通过token获取id
+    med_id = request.args.get("med_id")
     # user_id = 4
     # med_id = 9795
     dao = CartDao()
