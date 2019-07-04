@@ -79,19 +79,10 @@ def login_str():
         'msg': '用户名或密码输入错误',
     })
 
-@blue.route('/mine/', methods=('GET',))
-def mine():
-    req_data = request.get_json()
-    if not req_data['token']:
-        return jsonify({
-            "code": 400,
-            "msg": "您还未登录,请先登录!"
-        })
-    user_id = get_token_user_id(req_data['token'])  # 通过token获取id
 
-@blue.route('/own_page/',methods=('POST',))   #通过token查询个人信息
+@blue.route('/own_page/',methods=('GET',))   #通过token查询个人信息
 def own_first_page():
-    token = request.form.get("token")   #需要上传token
+    token = request.args.get("token")   #需要上传token
     try:
         u_id = get_token_user_id(token)
         dao = UserDao()

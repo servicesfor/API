@@ -22,3 +22,5 @@ def get_token_user_id(token):
     if check_token(token):
         return rd.get(token).decode()
 
+if __name__ == '__main__':
+    print(get_token_user_id('2198e4d0b98642418c47dd665e4e4d2c'))

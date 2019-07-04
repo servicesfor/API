@@ -63,18 +63,13 @@ class UserDao(BaseDao):
         sql2 = "select count(o_user_id) from orders where o_user_id='%s'" % (u_id)  # 药品订单
         sql3 = "select count(arc_id) from focus_doc where user_id='%s'" % (u_id)  # 关注医生
         sql4 = "select photo,nick_name from yl_user where id='%s'" % (u_id)  # 查询昵称 头像
-        data = self.query(sql)
-        data1 = self.query(sql1)
-        data2 = self.query(sql2)
-        data3 = self.query(sql3)
-        data4 = self.query(sql4)
-        print(data)
-        content["nick_name"] = data4[0]["nick_name"]
-        content["photo"] = data4[0]["photo"]
-        content["focus_doctor"] = data3[0]["count(arc_id)"]
-        content["collect_content"] = data[0]["count(arc_id)"]
-        content["my_inquiry"] = data1[0]["count(u_name_id)"]
-        content["my_recipel"] = data1[0]["count(u_name_id)"]
+
+        content["nick_name"] = self.query(sql4)[0]["nick_name"]
+        content["photo"] = self.query(sql4)[0]["photo"]
+        content["focus_doctor"] = self.query(sql3)[0]["count(arc_id)"]
+        content["collect_content"] = self.query(sql)[0]["count(arc_id)"]
+        content["my_inquiry"] = self.query(sql1)[0]["count(u_name_id)"]
+        content["my_recipel"] = self.query(sql1)[0]["count(u_name_id)"]
         return content
 
     def focus_doctors(self, doc_id, u_id):  # 关注医生功能
