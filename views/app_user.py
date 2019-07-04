@@ -75,4 +75,128 @@ def mine():
         })
     user_id = get_token_user_id(req_data['token'])  # 通过token获取id
 
+@blue.route('/own_page/',methods=('POST',))   #通过token查询个人信息
+def own_first_page():
+    token = request.form.get("token")   #需要上传token
+    try:
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        data = dao.return_own_mes(u_id)
+        return jsonify({
+            'code':200,
+            "msg":'个人页面查询成功',
+            "data":data
+        })
+    except:
+        return jsonify({
+            'code':405,
+            'msg':'请先注册或登录'
+        })
+
+
+
+@blue.route('/focus_doctor/',methods=('GET',))  #关注医生和取消关注功能接口
+def foc_doc():
+    token = request.args.get("token")      #用户token
+    doc_id = request.args.get("doctor_id")  #关注医生的id
+    try:
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        dao.focus_doctors(doc_id,u_id)
+        return jsonify({
+            'code':200,
+            "msg":'关注医生成功',
+        })
+    except:
+        return jsonify({
+            'code':405,
+            'msg':'请先注册或登录'
+        })
+
+@blue.route('/collect_art/',methods=('GET',))  #收藏和取消收藏文章接口
+def collect_art():
+    token = request.args.get("token")      #用户token
+    art_id = request.args.get("art_id")  #收藏和取消的文章id
+    try:
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        dao.collect_art(art_id,u_id)
+        return jsonify({
+            'code':200,
+            "msg":'收藏文章成功',
+        })
+    except:
+        return jsonify({
+            'code':405,
+            'msg':'请先注册或登录'
+        })
+
+@blue.route('/my_collect/', methods=('GET',))  # 通过token查询我的收藏
+def collect_article():
+    token = request.args.get("token")
+    try:
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        data = dao.collect_article(u_id)
+        return jsonify({
+            'code':200,
+            "msg":'我的收藏查询成功',
+            "data":data
+        })
+    except:
+        return jsonify({
+            'code':405,
+            'msg':'请先注册或登录'
+        })
+
+@blue.route('/my_focus/', methods=('GET',))  # 我的关注医生
+def my_focus():
+    token = request.args.get("token")
+    try:
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        data = dao.my_focus(u_id)
+        return jsonify({
+            'code':200,
+            "msg":'我的关注查询成功',
+            "data":data
+        })
+    except:
+        return jsonify({
+            'code':405,
+            'msg':'请先注册或登录'
+        })
+
+
+@blue.route('/update_phone/',methods=('POST',)) # 更改手机号发送验证码
+def update_ph():
+    dao = UserDao()
+    phone = request.form.get('phone')
+    data = dao.update_phone(phone)
+    return jsonify({
+        "code":200,
+        "data":data
+    })
+
+
+@blue.route('/check_code/', methods=('POST',))     # 验证验证码
+def check_code():
+    dao = UserDao()
+    token = request.args.get('token')  # 获取form中的token
+    user_id = get_token_user_id(token)  # 通过token获取id
+    # 前端请求的Content-Type: application/json
+    phone = request.form.get('phone')
+    input_code = request.form.get('input_code')
+    # 验证上传的必须的数据是否存在
+    if not confirm(phone,input_code):   #验证验证码是否一致
+        return jsonify({
+            "code":400,
+            "msg":"验证码输入错误,请重新输入",
+        })
+    dao.update_Verifi(phone,user_id)
+    return jsonify({
+        "code":200,
+        "msg":"更改手机号成功"
+    })
+
 
