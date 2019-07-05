@@ -1,6 +1,7 @@
 from flask import url_for
 
 from dao import BaseDao
+from dao.hospital_dao import HospitalDao
 
 
 class DoctorDao(BaseDao):  # 问医生dao
@@ -146,3 +147,24 @@ class DoctorDao(BaseDao):  # 问医生dao
             data3[i]['u_name'] = '匿名用户'
             doct_dic.append(data3)
         return doct_dic
+
+    def area_find(self,area):
+        sql = "select id as hos_id from hospitals WHERE hosp_addr LIKE %s"
+        hos_ids,doc_data = [],[]
+        area = '%' + area + '%'  # 配置查询条件
+        hos_id = self.query(sql,area)       #查询当前地区的医院id
+        if not hos_id:
+            return "暂无数据"
+        for i in hos_id:
+            hos_ids.append(i["hos_id"])  #将医院id添加到hos_ids列表中
+        dao = HospitalDao()
+        for hos_id in hos_ids:
+            doc_data.append(dao.hosp_detail(hos_id))
+
+        return doc_data
+
+
+
+
+
+

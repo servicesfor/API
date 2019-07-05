@@ -2,7 +2,7 @@ from dao import BaseDao
 
 
 class HospitalDao(BaseDao):
-    def hosp_detail(self, id):  # 医院详情
+    def hosp_detail(self, hos_id):  # 医院详情
         hosp, id1, list1 = [], [], []
         dict1 = {}
 
@@ -19,7 +19,7 @@ class HospitalDao(BaseDao):
         select dep.name,doc.doc_img from departments as dep inner join doctors as doc on dep.id=doc.department_id and doc.id=%s;
         '''  # 查询医生所属科室
 
-        data1 = self.query(sql1, id)
+        data1 = self.query(sql1, hos_id)
         if not data1:
             return
         dict1['hosp'] = data1[0]
