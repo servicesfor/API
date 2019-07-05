@@ -13,19 +13,26 @@ blue = Blueprint("doctor_api", __name__)
 @blue.route('/ask_doctor/', methods=('GET',))
 def ask_doctor():
     # 科室id列表
-    ofc_list = [[i for i in range(1, 10)],
-                [6, 24, 25, 26, 27, 28],
-                [4, 15, 16, 17, 19, 20],
-                [10, 11, 12, 13, 14, 18, 21, 22, 23]]
+    try:
+        ofc_list = [[i for i in range(1, 10)],
+                    [6, 24, 25, 26, 27, 28],
+                    [4, 15, 16, 17, 19, 20],
+                    [10, 11, 12, 13, 14, 18, 21, 22, 23]]
 
-    dao = DoctorDao()
-    ofc_data = dao.find_ofc(ofc_list)  # 查询科室信息
+        dao = DoctorDao()
+        ofc_data = dao.find_ofc(ofc_list)  # 查询科室信息
 
-    return jsonify({
-        'code': 201,
-        'msg': '问医生',
-        'ofc_data': ofc_data
-    })
+        return jsonify({
+            'code': 201,
+            'msg': '问医生',
+            'ofc_data': ofc_data
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"加载失败"
+        })
+
 
 
 @blue.route('/ask_doctor/<int:depid>/', methods=('GET',))  # 医生列表

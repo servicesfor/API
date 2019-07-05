@@ -6,13 +6,19 @@ blue = Blueprint("article_api", __name__)
 
 @blue.route('/article/', methods=('GET',))  # 首页api
 def article_one():
-    dao = ArticleDao()
-    data = dao.first_page()
-    return jsonify({
-        'code': 206,
-        'msg': '首页查询成功',
-        'data': data
-    })
+    try:
+        dao = ArticleDao()
+        data = dao.first_page()
+        return jsonify({
+            'code': 206,
+            'msg': '首页查询成功',
+            'data': data
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"首页内容获取失败"
+        })
 
 
 @blue.route('/article/<id>/', methods=('GET',))     #首页文章详情id

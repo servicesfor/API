@@ -19,65 +19,85 @@ blue = Blueprint('user_api', __name__)
 
 @blue.route('/send_code/', methods=('POST',))
 def send_code():
-    phone = request.form.get('phone')
-    new_code(phone)
-    return jsonify({
-        "code": 200,
-        "msg": "验证码发送成功"
-    })
+    try:
+        phone = request.form.get('phone')
+        new_code(phone)
+        return jsonify({
+            "code": 200,
+            "msg": "验证码发送成功"
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"发送失败"
+        })
 
 
 @blue.route('/login_code/', methods=('POST',))
 def login_code():
-    # 前端请求的Content-Type: application/json
-    phone = request.form.get('phone')
-    input_code = request.form.get('input_code')
-    # 验证上传的必须的数据是否存在
-    if not confirm(phone, input_code):  # 验证验证码是否一致
+    try:
+        # 前端请求的Content-Type: application/json
+        phone = request.form.get('phone')
+        input_code = request.form.get('input_code')
+        # 验证上传的必须的数据是否存在
+        if not confirm(phone, input_code):  # 验证验证码是否一致
+            return jsonify({
+                "code": 400,
+                "msg": "验证码输入错误,请重新输入",
+            })
+        req_data = {"phone": phone}  # 验证通过之后将验证码从req_data中删除
+        dao = UserDao()
+        if not dao.check_login_name(phone):  # 检测用户名是否存在
+            req_data['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
+            req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+            req_data['photo'] = '7b6b118c30e345ca8f1f6e6584b2e7fe'
+            req_data['login_auth_str'] = '677698c118bf5e6974f19fd2eb2a5b67'
+            req_data['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
+            req_data["balance"] = 50000.0
+            req_data["pay_pwd"] = "fb95decf3125dc6057a09188b238ff18"
+            req_data['activated'] = 1
+            dao.save(**req_data)  # 不存在则存入数据库中,在读取数据
+        user_id = dao.find_userid(phone)
+        token = cache.new_token()  # 设置新token
+        save_token(token, user_id)
         return jsonify({
-            "code": 400,
-            "msg": "验证码输入错误,请重新输入",
+            'code': 200,
+            'msg': 'ok',
+            'token': token,
         })
-    req_data = {"phone": phone}  # 验证通过之后将验证码从req_data中删除
-    dao = UserDao()
-    if not dao.check_login_name(phone):  # 检测用户名是否存在
-        req_data['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
-        req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
-        req_data['photo'] = '7b6b118c30e345ca8f1f6e6584b2e7fe'
-        req_data['login_auth_str'] = '677698c118bf5e6974f19fd2eb2a5b67'
-        req_data['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
-        req_data['activated'] = "1"
-        dao.save(**req_data)  # 不存在则存入数据库中,在读取数据
-    user_id = dao.find_userid(phone)
-    token = cache.new_token()  # 设置新token
-    save_token(token, user_id)
-    return jsonify({
-        'code': 200,
-        'msg': 'ok',
-        'token': token,
-    })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"注册登录失败"
+        })
 
 
 @blue.route('/login_str/', methods=('POST',))
 def login_str():
-    phone = request.form.get('phone')
-    auth_str = request.form.get('auth_str')
+    try:
+        phone = request.form.get('phone')
+        auth_str = request.form.get('auth_str')
 
-    dao = UserDao()
-    if dao.check_login_name(phone):  # 检测用户名是否存在
-        if dao.login_str(phone, auth_str):  # 检测密码是否正确
-            token = cache.new_token()
-            user_id = dao.find_userid(phone)
-            save_token(token, user_id)
-            return jsonify({
-                'code': 200,
-                'msg': 'ok',
-                'token': token,
-            })
-    return jsonify({
-        'code': 406,
-        'msg': '用户名或密码输入错误',
-    })
+        dao = UserDao()
+        if dao.check_login_name(phone):  # 检测用户名是否存在
+            if dao.login_str(phone, auth_str):  # 检测密码是否正确
+                token = cache.new_token()
+                user_id = dao.find_userid(phone)
+                save_token(token, user_id)
+                return jsonify({
+                    'code': 200,
+                    'msg': 'ok',
+                    'token': token,
+                })
+        return jsonify({
+            'code': 406,
+            'msg': '用户名或密码输入错误',
+        })
+    except:
+        return jsonify({
+            "code": 400,
+            "msg": "注册登录失败"
+        })
 
 
 @blue.route('/own_page/', methods=('GET',))  # 通过token查询个人信息
@@ -177,140 +197,184 @@ def my_focus():
 
 @blue.route('/update_phone/', methods=('POST',))  # 更改手机号发送验证码
 def update_ph():
-    dao = UserDao()
-    phone = request.form.get('phone')
-    data = dao.update_phone(phone)
-    return jsonify({
-        "code": 200,
-        "data": data
-    })
+    try:
+        dao = UserDao()
+        phone = request.form.get('phone')
+        data = dao.update_phone(phone)
+        return jsonify({
+            "code": 200,
+            "data": data
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"发送失败"
+        })
+
+
 
 
 @blue.route('/change_phone/', methods=('POST',))  # 验证验证码
 def check_code():
-    dao = UserDao()
-    token = request.args.get('token')  # 获取form中的token
-    user_id = get_token_user_id(token)  # 通过token获取id
-    # 前端请求的Content-Type: application/json
-    phone = request.form.get('phone')
-    input_code = request.form.get('input_code')
-    # 验证上传的必须的数据是否存在
-    if not confirm(phone, input_code):  # 验证验证码是否一致
+    try:
+        dao = UserDao()
+        token = request.args.get('token')  # 获取form中的token
+        user_id = get_token_user_id(token)  # 通过token获取id
+        # 前端请求的Content-Type: application/json
+        phone = request.form.get('phone')
+        input_code = request.form.get('input_code')
+        # 验证上传的必须的数据是否存在
+        if not confirm(phone, input_code):  # 验证验证码是否一致
+            return jsonify({
+                "code": 400,
+                "msg": "验证码输入错误,请重新输入",
+            })
+        dao.update_Verifi(phone, user_id)
         return jsonify({
-            "code": 400,
-            "msg": "验证码输入错误,请重新输入",
+            "code": 200,
+            "msg": "更改手机号成功"
         })
-    dao.update_Verifi(phone, user_id)
-    return jsonify({
-        "code": 200,
-        "msg": "更改手机号成功"
-    })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"更改手机号失败"
+        })
 
 
 @blue.route('/forget_pwd/', methods=('POST',))  # 忘记密码接口
 def forget_pwd():
-    phone = request.form.get('phone')
-    dao = UserDao()
-    data = dao.forget_pwd(phone)
-    return jsonify({
-        "code": 200,
-        "data": data
-    })
+    try:
+        phone = request.form.get('phone')
+        dao = UserDao()
+        data = dao.forget_pwd(phone)
+        return jsonify({
+            "code": 200,
+            "data": data
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"未知错误"
+        })
 
 
 @blue.route('/check_code/', methods=('POST',))  # 验证验证码接口
 def checking_code():
-    phone = request.form.get('phone')
-    input_code = request.form.get('input_code')
-    # 验证上传的必须的数据是否存在
-    if not confirm(phone, input_code):  # 验证验证码是否一致
+    try:
+        phone = request.form.get('phone')
+        input_code = request.form.get('input_code')
+        # 验证上传的必须的数据是否存在
+        if not confirm(phone, input_code):  # 验证验证码是否一致
+            return jsonify({
+                "code": 400,
+                "msg": "验证码输入错误,请重新输入",
+            })
+        token = cache.new_token()  # 设置新token
+        dao = UserDao()
+        user_id = dao.find_userid(phone)
+        save_token(token, user_id)
         return jsonify({
-            "code": 400,
-            "msg": "验证码输入错误,请重新输入",
+            'code': 200,
+            'msg': 'ok',
+            'token': token,
         })
-    token = cache.new_token()  # 设置新token
-    dao = UserDao()
-    user_id = dao.find_userid(phone)
-    save_token(token, user_id)
-    return jsonify({
-        'code': 200,
-        'msg': 'ok',
-        'token': token,
-    })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"验证失败"
+        })
 
 
 @blue.route('/new_password/', methods=('POST',))
 def new_password():
-    token = request.form.get('token')
-    auth_str = npwd = request.form.get("auth_str")
-    make_password(npwd)
-    user_id = get_token_user_id(token)
-    dao = UserDao()
-    dao.new_password(auth_str, user_id)
-    return jsonify({
-        'code': 200,
-        'msg': '更改密码成功'
-    })
+    try:
+        token = request.form.get('token')
+        auth_str = npwd = request.form.get("auth_str")
+        make_password(npwd)
+        user_id = get_token_user_id(token)
+        dao = UserDao()
+        dao.new_password(auth_str, user_id)
+        return jsonify({
+            'code': 200,
+            'msg': '更改密码成功'
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"更改密码失败"
+        })
 
 
 @blue.route('/upload_avator/', methods=('POST',))  # 更换头像
 def upload_avator():
     # 上传的头像字段为 img
     # 表单参数： token
-    file: FileStorage = request.files.get('img', None)
-    token = request.args.get('token', None)
+   try:
+       file: FileStorage = request.files.get('img', None)
+       token = request.args.get('token', None)
 
-    if all((bool(file), bool(token))):
-        # 验证文件的类型, png/jpeg/jpg, 单张不能超过2M
-        # content-type: image/png, image/jpeg
-        if file.content_type in ('image/png',
-                                 'image/jpeg'):
-            filename = uuid.uuid4().hex \
-                       + os.path.splitext(file.filename)[-1]
-            file.save(filename)
+       if all((bool(file), bool(token))):
+           # 验证文件的类型, png/jpeg/jpg, 单张不能超过2M
+           # content-type: image/png, image/jpeg
+           if file.content_type in ('image/png',
+                                    'image/jpeg'):
+               filename = uuid.uuid4().hex \
+                          + os.path.splitext(file.filename)[-1]
+               file.save(filename)
 
-            # 上传到oss云服务器上
-            key = oss.upload_file(filename)
+               # 上传到oss云服务器上
+               key = oss.upload_file(filename)
 
-            os.remove(filename)  # 删除临时文件
+               os.remove(filename)  # 删除临时文件
 
-            # token = request.args.get('token')
-            # 将key写入到DB中
-            id = get_token_user_id(token)
+               # token = request.args.get('token')
+               # 将key写入到DB中
+               id = get_token_user_id(token)
 
-            sql = "update yl_user set photo=(%s) where id=%s"
-            db = BaseDao()
-            db.query(sql, key, id)
+               sql = "update yl_user set photo=(%s) where id=%s"
+               db = BaseDao()
+               db.query(sql, key, id)
 
-            return jsonify({
-                'code': 200,
-                'msg': '上传文件成功',
-                'file_key': key
-            })
-        else:
-            return jsonify({
-                'code': 201,
-                'msg': '图片格式只支持png或jpeg'
-            })
+               return jsonify({
+                   'code': 200,
+                   'msg': '上传文件成功',
+                   'file_key': key
+               })
+           else:
+               return jsonify({
+                   'code': 201,
+                   'msg': '图片格式只支持png或jpeg'
+               })
 
-    return jsonify({
-        'code': 100,
-        'msg': 'POST请求参数必须有img和token'
-    })
+       return jsonify({
+           'code': 100,
+           'msg': 'POST请求参数必须有img和token'
+       })
+   except:
+       return jsonify({
+           "code":400,
+           "msg":"更换头像失败"
+       })
 
 
 @blue.route('/img_url/', methods=('GET',))  # 获取头像
 def get_img_url():
-    token = request.args.get('token')
-    id = get_token_user_id(token)
-    sql = "select photo from yl_user where id=%s"
-    db = BaseDao()
-    dic_key = db.query(sql, id)[0]
-    key = dic_key['photo']
-    img_url = oss.get_small_url(key)
-    return jsonify({
-        'url': img_url
-    })
+    try:
+        token = request.args.get('token')
+        id = get_token_user_id(token)
+        sql = "select photo from yl_user where id=%s"
+        db = BaseDao()
+        dic_key = db.query(sql, id)[0]
+        key = dic_key['photo']
+        img_url = oss.get_small_url(key)
+        return jsonify({
+            'url': img_url
+        })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"获取失败"
+        })
 
 
 @blue.route('/my_setting/', methods=('GET',))  # 设置和个人信息页面
@@ -353,15 +417,21 @@ def up_nick():  # 更新昵称
 
 @blue.route('/is_exist/', methods=('POST',))  # 注册判断手机号是否已存在
 def exist():
-    phone = request.form.get('phone')
-    dao = UserDao()
-    data = dao.is_exist(phone)
-    if data:
+    try:
+        phone = request.form.get('phone')
+        dao = UserDao()
+        data = dao.is_exist(phone)
+        if data:
+            return jsonify({
+                "code": 400,
+                "msg": "该手机号已存在"
+            })
         return jsonify({
-            "code": 400,
-            "msg": "该手机号已存在"
+            "code": 200,
+            "msg": "该手机号未注册"
         })
-    return jsonify({
-        "code": 200,
-        "msg": "该手机号未注册"
-    })
+    except:
+        return jsonify({
+            "code":400,
+            "msg":"查询失败"
+        })

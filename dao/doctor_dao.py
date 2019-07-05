@@ -125,7 +125,7 @@ class DoctorDao(BaseDao):  # 问医生dao
            '''  # 医生表，科室表查询医生科室名
         sql3 = '''
            select hos.hosp_name,hosp_level,hos.id from hospitals as hos 
-           inner join doctors as doc on doc.hospital_id and doc.id=%s;
+           inner join doctors as doc on doc.hospital_id=hos.id and doc.id=%s;
            '''  # 医生表，医院表查询医院名、医院等级
         sql4 = '''
            select adv.doc_con,doc_time from doc_adv as adv 

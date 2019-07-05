@@ -14,7 +14,6 @@ if __name__ == '__main__':
     app.register_blueprint(app_user.blue)
     app.register_blueprint(app_doctor.blue)
     app.register_blueprint(app_medicine.blue)
-    app.register_blueprint(app_oneask.blue)
     app.register_blueprint(app_cart.blue)
     app.register_blueprint(app_hospital.blue)
     app.register_blueprint(app_diseases.blue)

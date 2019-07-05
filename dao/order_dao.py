@@ -2,6 +2,7 @@ from dao import BaseDao
 from datetime import datetime
 
 from dao.cart_dao import CartDao
+from libs.crypt import check_password
 
 ORDER_STATUS_NOT_PAY = 0  # 待付款
 ORDER_STATUS_NOT_SEND = 1  # 待发货
@@ -130,3 +131,38 @@ class OrderDao(BaseDao):
         data[0]["med_kind"] = self.query(sql3, order_id)[0]["med_kind"]  # 添加药品种类
         data.append(data1)
         return data
+
+    def pay_order(self,user_id,order_id,pay_pwd):       # 订单支付
+        sql1 = "select pay_pwd,balance from yl_user where id=%s"    # 查询密码和余额
+        sql2 = "select o_price,o_status from orders where o_id=%s"  # 查询订单总价,订单状态
+        sql3 = "update yl_user set balance=balance - %s where id=%s"    # 付款
+        sql4 = "select o_goods_id,o_med_num from order_detail where o_order_id=%s"  # 查询订单中药品id,药品数量
+        sql5 = "update medicine set med_stock=med_stock - %s where id=%s"   # 更改药品库存
+        sql6 = "update orders set o_status=1  where o_id=%s"    # 改变订单状态
+
+        db_pay_pwd = self.query(sql1,user_id)[0]["pay_pwd"]
+        balance = self.query(sql1,user_id)[0]["balance"]
+        o_price = self.query(sql2,order_id)[0]["o_price"]
+        if  self.query(sql2,order_id)[0]["o_status"]:
+            return "订单状态有误,支付失败"
+        if  not check_password(pay_pwd,db_pay_pwd):
+            return "支付密码输入错误,请重新输入"
+        if  not o_price  <= balance:
+            return "余额不足请充值"
+        self.query(sql6,order_id)
+        self.query(sql3,o_price,user_id)
+        data = self.query(sql4,order_id)
+        for i in data:
+            self.query(sql5,i["o_med_num"],i["o_goods_id"])
+        return {"o_status":1}
+
+
+
+
+
+
+
+
+
+
+

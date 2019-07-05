@@ -1,6 +1,6 @@
 from redis import Redis
 
-rd = Redis(host='localhost',
+rd = Redis(host='121.199.63.71',
            port=6375, db=1)
 
 if __name__ == '__main__':
