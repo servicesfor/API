@@ -4,7 +4,7 @@ from pymysql.cursors import DictCursor
 from logger import api_logger
 
 DB_CONFIG = {
-    'host': '121.199.63.71',
+    'host': 'localhost',
     'port': 3306,
     'user': 'yladmin',
     'password': 'yl123',
@@ -43,10 +43,10 @@ class BaseDao():
         sql = 'insert into %s(%s) values(%s)' % \
               (table_name,
                ','.join(values.keys()),
-               ','.join(["'" + v + "'"  for v in values.values()]))
+               ','.join(["'" + v + "'" for v in values.values()]))
 
         with self.db as c:
-            c.execute(sql,args=values)
+            c.execute(sql, args=values)
 
         api_logger.info('insert %s ok!' % sql)
 
@@ -59,19 +59,14 @@ class BaseDao():
         sql = 'select  %s(%s) from' % \
               (table_name)
 
-
     def count(self, table_name):
         pass
 
-    def query(self,sql,*args):
+    def query(self, sql, *args):
         with self.db as c:
-            c.execute(sql,args=args)
+            c.execute(sql, args=args)
             data = c.fetchall()
             if data:
                 data = list(data)
 
         return data
-
-
-
-

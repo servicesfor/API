@@ -1,17 +1,14 @@
-import base64
-import datetime
-
 from dao import BaseDao
 from libs.sms import new_code
 from logger import api_logger
 
-from libs.crypt import make_password, check_password
+from libs.crypt import check_password
 
 
 class UserDao(BaseDao):
-    def find_userid(self,phone):
-        return self.query("select id as user_id "\
-                          "from yl_user where phone=%s",phone)[0]["user_id"]
+    def find_userid(self, phone):
+        return self.query("select id as user_id " \
+                          "from yl_user where phone=%s", phone)[0]["user_id"]
 
     def save(self, **values):
         api_logger.info('db insert yl_user: <%s>' % values['phone'])
@@ -61,36 +58,39 @@ class UserDao(BaseDao):
         # 查询收藏内容总数
         sql1 = "select count(*) from doc_adv where u_name_id=%s"
         # 我的问诊我的处方
-        sql2 = "select count(*) from orders where o_user_id=%s"   # 药品订单
+        sql2 = "select count(*) from orders where o_user_id=%s"  # 药品订单
         sql3 = "select count(*) from focus_doc where user_id=%s"  # 关注医生
         sql4 = "select count(*) from collect_art where user_id=%s"
         sql5 = "select photo,nick_name from yl_user where id=%s"  # 查询昵称 头像
-        print(u_id)
-        content["nick_name"] = self.query(sql5,u_id)[0]["nick_name"]
-        content["photo"] = self.query(sql5,u_id)[0]["photo"]
-        content["focus_doctor"] = self.query(sql3,u_id)[0]["count(*)"]
-        content["collect_content"] = self.query(sql4,u_id)[0]["count(*)"]
-        content["my_inquiry"] = self.query(sql2,u_id)[0]["count(*)"]
-        content["my_recipel"] = self.query(sql1,u_id)[0]["count(*)"]
+
+        content["nick_name"] = self.query(sql5, u_id)[0]["nick_name"]
+        content["photo"] = self.query(sql5, u_id)[0]["photo"]
+        content["focus_doctor"] = self.query(sql3, u_id)[0]["count(*)"]
+        content["collect_content"] = self.query(sql4, u_id)[0]["count(*)"]
+        content["my_inquiry"] = self.query(sql2, u_id)[0]["count(*)"]
+        content["my_recipel"] = self.query(sql1, u_id)[0]["count(*)"]
         return content
 
     def focus_doctors(self, doc_id, u_id):  # 关注医生功能
 
         sql = "select * from focus_doc where doc_id=%s and user_id=%s"
-        if self.query(sql,doc_id,u_id):
-            self.query("delete from focus_doc where doc_id=%s "\
-                       "and user_id=%s ",doc_id,u_id)
-        self.query("insert into focus_doc(doc_id,user_id) "\
-                   "values(%s,%s)",doc_id,u_id)
+        if self.query(sql, doc_id, u_id):
+            self.query("delete from focus_doc where doc_id=%s " \
+                       "and user_id=%s ", doc_id, u_id)
+        self.query("insert into focus_doc(doc_id,user_id) " \
+                   "values(%s,%s)", doc_id, u_id)
 
-    def collect_art(self,art_id,u_id):
+    def setting_page(self, user_id):  # 查询昵称头像电话和性别
+        sql = "select nick_name,photo,sex,phone from yl_user where id=%s"
+        return self.query(sql, user_id)
+
+    def collect_art(self, art_id, u_id):
         sql = "select * from collect_art where doc_id=%s and user_id=%s"
         if self.query(sql, art_id, u_id):
             self.query("delete from collect_art where art_id=%s " \
                        "and user_id=%s ", art_id, u_id)
-        self.query("insert into collect_art(art_id,user_id) "\
-                   "values(%s,%s)",art_id,u_id)
-
+        self.query("insert into collect_art(art_id,user_id) " \
+                   "values(%s,%s)", art_id, u_id)
 
     def update_phone(self, phone):
         sql1 = 'select phone from yl_user where phone=%s;'
@@ -112,11 +112,11 @@ class UserDao(BaseDao):
         data = self.query(sql1)
         if not data:
             return "暂无收藏"
-        arc_ids =[]
+        arc_ids = []
         for i in data:
             arc_ids.append(i["arc_id"])
         for i in arc_ids:
-            data = self.query(sql2,i)
+            data = self.query(sql2, i)
         return data
 
     def my_focus(self, u_id):
@@ -138,38 +138,34 @@ class UserDao(BaseDao):
                 and doctors.id=%s;
                 '''  # 通过医生表查询医院     医院名，地址，电话，医保，等级
 
-        data = self.query(sql1,u_id)
+        data = self.query(sql1, u_id)
         if not data:
             return "暂无关注"
-        doc_ids =[]
+        doc_ids = []
         my_focus = []
         for i in data:
             doc_ids.append(i["doc_id"])
         for i in doc_ids:
-            data = self.query(sql2,i)[0]
-            data["hosp_name"] = self.query(sql4,i)[0]["hosp_name"]
-            data["d_level"] = self.query(sql3,i)[0]["d_level"]
-            data["m_answer"] = self.query(sql3,i)[0]["m_answer"]
-            data["avg_response"] = self.query(sql3,i)[0]["avg_response"]
+            data = self.query(sql2, i)[0]
+            data["hosp_name"] = self.query(sql4, i)[0]["hosp_name"]
+            data["d_level"] = self.query(sql3, i)[0]["d_level"]
+            data["m_answer"] = self.query(sql3, i)[0]["m_answer"]
+            data["avg_response"] = self.query(sql3, i)[0]["avg_response"]
             my_focus.append(data)
 
         return my_focus
 
-    def forget_pwd(self,phone):
+    def forget_pwd(self, phone):
         sql = 'select phone from yl_user where phone=%s;'
         if not self.query(sql, phone):
             return '该手机号不存在！'
         new_code(phone)  # 发送验证码
         return "发送验证码成功!"
 
-    def new_password(self,auth_str,user_id):
+    def new_password(self, auth_str, user_id):
         self.query("update yl_user set login_auth_str=%s where id=%s")
 
-
-
-
-
-
-
-
-
+    def is_exist(self, phone):  # 注册判断手机号是否已存在
+        sql = 'select * from yl_user where phone=%s '
+        data = self.query(sql, phone)
+        return data

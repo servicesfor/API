@@ -1,5 +1,5 @@
-
 from dao import BaseDao
+
 
 class OneAskDao(BaseDao):
     def oneask_list(self, id):  # 一元问医生
@@ -18,21 +18,21 @@ class OneAskDao(BaseDao):
                    select dep.name as dep_name,doc.id,doc_name,doc_title,doc_goods from departments as dep inner join doctors as doc on doc.department_id=dep.id and doc.id=%s;
                    '''  # 医生id、姓名、职称、擅长、部门
 
-        list1,list2,list3,list4,list5 = [],[],[],[],[]
+        list1, list2, list3, list4, list5 = [], [], [], [], []
         data3 = {}
-        data1 = self.query(sql1)[0]     #当前点击科室
-        data2 = self.query(sql2, id)    #查询所属科室医生id
-        if not data2:           #判断科室下是否有值
+        data1 = self.query(sql1)[0]  # 当前点击科室
+        data2 = self.query(sql2, id)  # 查询所属科室医生id
+        if not data2:  # 判断科室下是否有值
             return
         for i in range(len(data2)):
-            list1.append(data2[i]['id'])        #将所有科室id加到list1列表中
+            list1.append(data2[i]['id'])  # 将所有科室id加到list1列表中
 
         for id in list1:
             if self.query(sql3, id):
                 list2.append(self.query(sql3, id)[0])
                 list3.append(self.query(sql3, id)[0]['d_name_id'])
         for id in list3:
-            list4.append(self.query(sql4,id)[0])
+            list4.append(self.query(sql4, id)[0])
         for i in range(len(list4)):
             data3["doc_goods"] = list4[i]['doc_goods']
             data3["doc_name"] = list4[i]['doc_name']
@@ -46,6 +46,5 @@ class OneAskDao(BaseDao):
             data3["text_price"] = list2[i]['text_price']
         list5.append(data1)
         list5.append(data3)
-
 
         return list5

@@ -7,7 +7,7 @@ import base64
 
 
 class ArticleDao(BaseDao):
-    def title_img(self):    # 急救大全首页图片分类
+    def title_img(self):  # 急救大全首页图片分类
         science_text = {}
         article = []
         recom_article = []
@@ -16,14 +16,14 @@ class ArticleDao(BaseDao):
         info2 = {}
 
         sql = 'select subtitle from art_title'
-        sql1 ='''
+        sql1 = '''
             select article_image.id,article_image.image from art_title inner join article_image on art_title.id=article_image.subtitle_id_id and article_image.subtitle_id_id =1     
         '''
-        sql2 ='''
+        sql2 = '''
             select article_image.id,article_image.image from art_title inner join article_image
             on art_title.id=article_image.subtitle_id_id and article_image.subtitle_id_id =2     
         '''
-        sql3 ='''
+        sql3 = '''
             select article_image.id,article_image.image from art_title inner join article_image
             on art_title.id=article_image.subtitle_id_id and article_image.subtitle_id_id =3     
         '''
@@ -42,14 +42,14 @@ class ArticleDao(BaseDao):
         article.append(info)
         article.append(info1)
         article.append(info2)
-        for j in range(0,4):
-            i = random.randint(0,len(data4))
+        for j in range(0, 4):
+            i = random.randint(0, len(data4))
             recom_article.append(data4[i])
         science_text["article"] = article
         science_text["recom_article"] = recom_article
         return science_text
 
-    def article_info(self,id):  # 查询文章内容
+    def article_info(self, id):  # 查询文章内容
         sql5 = '''
             select articles.title,articles.auth,articles.subjection,articles.content,articles.auth_img,
              articles.title_img from articles inner join article_image on 
@@ -59,11 +59,10 @@ class ArticleDao(BaseDao):
         content = data5[0]["content"]
         content = base64.b64decode(content.encode()).decode()
         data5[0]["content"] = content
-        print(content)
         return data5
 
-    def recommend_article(self,id):  # 推荐文章
-        sql6 = 'select * from articles where id=%s'%(id)
+    def recommend_article(self, id):  # 推荐文章
+        sql6 = 'select * from articles where id=%s' % (id)
         data6 = self.query(sql6)
         content = data6[0]["content"]
         content = base64.b64decode(content.encode()).decode()

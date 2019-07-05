@@ -82,8 +82,8 @@ def login_str():
 
 @blue.route('/own_page/', methods=('GET',))  # 通过token查询个人信息
 def own_first_page():
-    token = request.args.get("token")  # 需要上传token
     try:
+        token = request.args.get("token")  # 需要上传token
         u_id = get_token_user_id(token)
         dao = UserDao()
         data = dao.return_own_mes(u_id)
@@ -101,9 +101,9 @@ def own_first_page():
 
 @blue.route('/focus_doctor/', methods=('GET',))  # 关注医生和取消关注功能接口
 def foc_doc():
-    token = request.args.get("token")  # 用户token
-    doc_id = request.args.get("doctor_id")  # 关注医生的id
     try:
+        token = request.args.get("token")  # 用户token
+        doc_id = request.args.get("doctor_id")  # 关注医生的id
         u_id = get_token_user_id(token)
         dao = UserDao()
         dao.focus_doctors(doc_id, u_id)
@@ -120,9 +120,9 @@ def foc_doc():
 
 @blue.route('/collect_art/', methods=('GET',))  # 收藏和取消收藏文章接口
 def collect_art():
-    token = request.args.get("token")  # 用户token
-    art_id = request.args.get("art_id")  # 收藏和取消的文章id
     try:
+        token = request.args.get("token")  # 用户token
+        art_id = request.args.get("art_id")  # 收藏和取消的文章id
         u_id = get_token_user_id(token)
         dao = UserDao()
         dao.collect_art(art_id, u_id)
@@ -139,8 +139,8 @@ def collect_art():
 
 @blue.route('/my_collect/', methods=('GET',))  # 通过token查询我的收藏
 def collect_article():
-    token = request.args.get("token")
     try:
+        token = request.args.get("token")
         u_id = get_token_user_id(token)
         dao = UserDao()
         data = dao.collect_article(u_id)
@@ -158,8 +158,8 @@ def collect_article():
 
 @blue.route('/my_focus/', methods=('GET',))  # 我的关注医生
 def my_focus():
-    token = request.args.get("token")
     try:
+        token = request.args.get("token")
         u_id = get_token_user_id(token)
         dao = UserDao()
         data = dao.my_focus(u_id)
@@ -310,4 +310,58 @@ def get_img_url():
     img_url = oss.get_small_url(key)
     return jsonify({
         'url': img_url
+    })
+
+
+@blue.route('/my_setting/', methods=('GET',))  # 设置和个人信息页面
+def my_set():
+    try:
+        token = request.args.get("token")
+        u_id = get_token_user_id(token)
+        dao = UserDao()
+        data = dao.setting_page(u_id)
+        return jsonify({
+            'code': 200,
+            "msg": '设置页面查询成功',
+            "data": data
+        })
+    except:
+        return jsonify({
+            'code': 405,
+            'msg': '请先注册或登录'
+        })
+
+
+@blue.route('/update_nickname/', methods=('POST',))
+def up_nick():  # 更新昵称
+    try:
+        token = request.args.get('token')  # 获取token
+        userid = int(get_token_user_id(token))  # 通过token获取id
+        nick_name = request.form.get('nick_name')  # 获取表单中的字段
+        dao = UserDao()
+        dao.update_name(nick_name, userid)  # 执行更新昵称函数
+        return jsonify({
+            'code': 200,
+            'msg': '更新昵称成功'
+        })
+    except:
+        return jsonify({
+            'code': 405,
+            'msg': '请先注册或登录'
+        })
+
+
+@blue.route('/is_exist/', methods=('POST',))  # 注册判断手机号是否已存在
+def exist():
+    phone = request.form.get('phone')
+    dao = UserDao()
+    data = dao.is_exist(phone)
+    if data:
+        return jsonify({
+            "code": 400,
+            "msg": "该手机号已存在"
+        })
+    return jsonify({
+        "code": 200,
+        "msg": "该手机号未注册"
     })

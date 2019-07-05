@@ -1,7 +1,6 @@
 from flask import url_for
 
 from dao import BaseDao
-from logger import api_logger
 
 
 class DoctorDao(BaseDao):  # 问医生dao
@@ -10,8 +9,7 @@ class DoctorDao(BaseDao):  # 问医生dao
         ofcs_list = []
         ofcs = []  # 创建小科室列表
         # 查询科室数据库
-        sql = 'select * from departments ' \
-              'where id=%s'
+        sql = 'select * from departments where id=%s'
         # 小科室分类名称
         title = ['常见科室', '内科', '外科', '其他']
         for i in range(len(ofc_list)):

@@ -1,9 +1,6 @@
-import random
-
 from flask import url_for
 
 from dao import BaseDao
-from logger import api_logger
 
 details = [['痘痘', '黑头', '脱发', '避孕', '阳痿', '感冒', '脚气', '痔疮'],
            ['支气管炎', '鼻炎', '慢阻肺', '肺结核', '肺炎', '哮喘', '其他'],
@@ -50,9 +47,9 @@ class MedicineDao(BaseDao):
         sql2 = """SELECT id,med_name,med_img,price,packing_size,approval_number,med_stock 
               FROM medicine where id=%s
                """
-        list2,data = [],[]
+        list2, data = [], []
 
-        ill_name = '%' + ill_name + '%'     #配置查询条件
+        ill_name = '%' + ill_name + '%'  # 配置查询条件
         list1 = self.query(sql1, ill_name)  # 查询药品id信息
         if not list1:  # 判断药品信息是否为空
             return
