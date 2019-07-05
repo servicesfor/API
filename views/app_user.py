@@ -128,10 +128,10 @@ def foc_doc():
         doc_id = request.args.get("doctor_id")  # 关注医生的id
         u_id = get_token_user_id(token)
         dao = UserDao()
-        dao.focus_doctors(doc_id, u_id)
+        msg = dao.focus_doctors(doc_id, u_id)
         return jsonify({
             'code': 200,
-            "msg": '关注医生成功',
+            "msg": msg
         })
     except:
         return jsonify({
@@ -291,8 +291,8 @@ def checking_code():
 def new_password():
     try:
         token = request.form.get('token')
-        auth_str = npwd = request.form.get("auth_str")
-        make_password(npwd)
+        user_pwd = request.form.get("auth_str")
+        auth_str = make_password(user_pwd)
         user_id = get_token_user_id(token)
         dao = UserDao()
         dao.new_password(auth_str, user_id)

@@ -78,8 +78,10 @@ class UserDao(BaseDao):
         if self.query(sql, doc_id, u_id):
             self.query("delete from focus_doc where doc_id=%s " \
                        "and user_id=%s ", doc_id, u_id)
+            return '取消关注成功'
         self.query("insert into focus_doc(doc_id,user_id) " \
                    "values(%s,%s)", doc_id, u_id)
+        return '关注成功'
 
     def setting_page(self, user_id):  # 查询昵称头像电话和性别
         sql = "select nick_name,photo,sex,phone from yl_user where id=%s"
@@ -164,7 +166,8 @@ class UserDao(BaseDao):
         return "发送验证码成功!"
 
     def new_password(self, auth_str, user_id):
-        self.query("update yl_user set login_auth_str=%s where id=%s")
+        self.query("update yl_user set login_auth_str=%s where id=%s",auth_str, user_id)
+
 
     def is_exist(self, phone):  # 注册判断手机号是否已存在
         sql = 'select * from yl_user where phone=%s '
