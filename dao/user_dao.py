@@ -125,12 +125,12 @@ class UserDao(BaseDao):
     def my_focus(self, u_id):
         sql1 = "select doc_id from focus_doc where user_id=%s"
         sql2 = '''               
-                select doc.doc_name,doc_img,doc_title,doc_goods,dep.name as dep_name 
+                select doc.id,doc.doc_name,doc_img,doc_title,doc_goods,dep.name as dep_name 
                 from doctors as doc inner join departments as dep on doc.department_id=dep.id 
                 and doc.id=%s;
                 '''  # 查询通过医生表查询科室表  医生名，医生图片，职称，擅长，简历，科室名
         sql3 = '''
-                select qua.d_level,qua.m_answer,qua.avg_response
+                select qua.d_level,qua.m_answer,qua.avg_response,is_recommend,text_price,tel_price
                 from doctors as doc inner join doctor_quality as qua 
                 on qua.d_name_id=doc.id 
                 and doc.id=%s;

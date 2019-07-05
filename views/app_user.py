@@ -366,10 +366,10 @@ def get_img_url():
         id = get_token_user_id(token)
         sql = "select photo from yl_user where id=%s"
         db = BaseDao()
-        dic_key = db.query(sql, id)[0]
-        key = dic_key['photo']
+        key = db.query(sql, id)[0]['photo']
         img_url = oss.get_small_url(key)
         return jsonify({
+            "code": 400,
             'url': img_url
         })
     except:

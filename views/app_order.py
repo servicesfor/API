@@ -80,7 +80,7 @@ def create_order():
         })
     except:
         return jsonify({
-            "code": 200,
+            "code": 400,
             "msg": "下单失败"
         })
 
