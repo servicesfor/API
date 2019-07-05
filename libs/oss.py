@@ -63,3 +63,7 @@ def get_small_url(key):
     url = get_bucket().sign_url('GET', key, 10 * 60, params={'x-oss-process': style})
 
     return url
+
+
+if __name__ == '__main__':
+    print(get_small_url("e756cb4fa81748b5a6538b50ab9eee9d"))

@@ -9,6 +9,11 @@ blue = Blueprint("hospital_api", __name__)
 def hospital(hospid):
     dao = HospitalDao()
     hosp = dao.hosp_detail(hospid)
+    if not hosp:
+        return jsonify({
+            "code": 200,
+            "msg": "暂无该医院信息！",
+        })
     return jsonify({
         "code":200,
         "msg":"获取医院信息成功！",
