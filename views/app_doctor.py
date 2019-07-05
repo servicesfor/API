@@ -165,7 +165,7 @@ def socket_doc():
             'msg': '暂无数据'
         })
 
-@blue.route('/area_find/')      #按地区查找医生
+@blue.route('/area_find/',methods=('GET',))      #按地区查找医生
 def area_find():
     try:
         area = request.args.get("area")
