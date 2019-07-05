@@ -61,9 +61,10 @@ class UserDao(BaseDao):
         sql2 = "select count(*) from orders where o_user_id=%s"  # 药品订单
         sql3 = "select count(*) from focus_doc where user_id=%s"  # 关注医生
         sql4 = "select count(*) from collect_art where user_id=%s"
-        sql5 = "select photo,nick_name from yl_user where id=%s"  # 查询昵称 头像
+        sql5 = "select photo,nick_name,balance from yl_user where id=%s"  # 查询昵称 头像
 
         content["nick_name"] = self.query(sql5, u_id)[0]["nick_name"]
+        content["balance"] = self.query(sql5, u_id)[0]["balance"]
         content["photo"] = self.query(sql5, u_id)[0]["photo"]
         content["focus_doctor"] = self.query(sql3, u_id)[0]["count(*)"]
         content["collect_content"] = self.query(sql4, u_id)[0]["count(*)"]
