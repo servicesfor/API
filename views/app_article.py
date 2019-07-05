@@ -15,15 +15,21 @@ def article_one():
     })
 
 
-@blue.route('/article/<id>/', methods=('GET',))
+@blue.route('/article/<id>/', methods=('GET',))     #首页文章详情id
 def article_two(id):
-    dao = ArticleDao()
-    data = dao.second_page(id)
-    return jsonify({
-        'code': 206,
-        'msg': '文章查询成功',
-        'data': data
-    })
+    try:
+        dao = ArticleDao()
+        data = dao.second_page(id)
+        return jsonify({
+            'code': 206,
+            'msg': '文章查询成功',
+            'data': data
+        })
+    except:
+        return jsonify({
+            'code': 400,
+            'msg': '查询内容不存在'
+        })
 
 
 @blue.route('/science_article/', methods=('GET',))  # 急救大全首页

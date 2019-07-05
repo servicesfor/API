@@ -132,9 +132,13 @@ class CartDao(BaseDao):
         return NOT_SELECT_PRICE
 
     def is_select(self, user_id, med_id):  # 改变选中状态
-        sql = "update carts set c_is_select=not c_is_select where c_user_id=%s and c_med_id=%s"
+        sql1 = "update carts set c_is_select=not c_is_select where c_user_id=%s and c_med_id=%s"
 
-        self.query(sql, user_id, med_id)
+        sql2 = "select c_is_select from carts where c_user_id=%s and c_med_id=%s "
+
+        self.query(sql1, user_id, med_id)
+        return self.query(sql2, user_id, med_id)[0]["c_is_select"]
+
 
     def del_cart(self, user_id, med_id):
         sql = "delete from carts where c_user_id=%s and c_med_id=%s "

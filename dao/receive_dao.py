@@ -54,3 +54,6 @@ class ReceiveDao(BaseDao):
     def edit_receive(self, r_name, r_phone, r_addr, r_id):
         sql = "update yl_receive set r_name=%s,r_phone=%s,r_addr=%s where id=%s"
         self.query(sql, r_name, r_phone, r_addr, r_id)
+
+    def receive_list(self,user_id):
+        return  self.query("select * from yl_receive where r_user_id=%s",user_id)

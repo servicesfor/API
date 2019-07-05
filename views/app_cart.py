@@ -6,7 +6,7 @@ from libs.cache import get_token_user_id
 blue = Blueprint("cart_api", __name__)
 
 
-@blue.route('/add_cart/', methods=('GET',))  # 添加购物车接口
+@blue.route('/add_cart/', methods=('GET',))  # 添加药品接口
 def add_cart():
     try:
         token = request.args.get("token")
@@ -31,7 +31,7 @@ def add_cart():
         })
 
 
-@blue.route('/sub_cart/', methods=('GET',))  # 减少购物车药品接口
+@blue.route('/sub_cart/', methods=('GET',))  # 减少药品接口
 def sub_cart():
     token = request.args.get("token")
     if not token:
@@ -81,14 +81,15 @@ def is_select():
     user_id = get_token_user_id(token)  # 通过token获取id
     med_id = request.args.get("med_id")
     dao = CartDao()
-    dao.is_select(user_id, med_id)
+    is_select = dao.is_select(user_id, med_id)
     return jsonify({
         "code": 200,
         "msg": "更改选中状态成功",
+        "is_select":is_select
     })
 
 
-@blue.route('/del_cart/', methods=('GET',))  # 删除购物车接口
+@blue.route('/del_cart/', methods=('GET',))  # 删除购物车中一件药品接口
 def del_cart():
     token = request.args.get("token")
 

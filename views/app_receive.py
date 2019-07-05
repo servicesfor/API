@@ -108,3 +108,29 @@ def edit_receive():
         "code": 200,
         "msg": "编辑收货地址成功",
     })
+
+@blue.route('/receive_list/', methods=('GET',))  # 编辑收货地址接口
+def receive_list():
+    token = request.args.get('token')
+
+    if not token:
+        return jsonify({
+            "code": 400,
+            "msg": "您还未登录,请先登录!"
+        })
+
+    user_id = get_token_user_id(token)
+    dao = ReceiveDao()
+    data = dao.receive_list(user_id)
+    return jsonify({
+        "code": 200,
+        "msg": "查询收货地址列表成功",
+        "data": data
+    })
+
+
+
+
+
+
+
