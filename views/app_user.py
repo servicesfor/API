@@ -48,15 +48,17 @@ def login_code():
         req_data = {"phone": phone}  # 验证通过之后将验证码从req_data中删除
         dao = UserDao()
         if not dao.check_login_name(phone):  # 检测用户名是否存在
+            req_data['phone'] = phone
             req_data['nick_name'] = ''.join(random.sample('zyxwvutsrqponmlkjihgfedcba', 14))
             req_data['create_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
             req_data['photo'] = '7b6b118c30e345ca8f1f6e6584b2e7fe'
             req_data['login_auth_str'] = '677698c118bf5e6974f19fd2eb2a5b67'
             req_data['update_time'] = datetime.datetime.strftime(datetime.datetime.now(), '%Y-%m-%d %H:%M:%S')
-            req_data["balance"] = 50000.0
+            req_data["balance"] = '50000'
             req_data["pay_pwd"] = "fb95decf3125dc6057a09188b238ff18"
-            req_data['activated'] = 1
+            req_data['activated'] = '1'
             dao.save(**req_data)  # 不存在则存入数据库中,在读取数据
+
         user_id = dao.find_userid(phone)
         token = cache.new_token()  # 设置新token
         save_token(token, user_id)

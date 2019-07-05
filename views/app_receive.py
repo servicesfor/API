@@ -132,7 +132,7 @@ def edit_receive():
             "msg":"编辑失败"
         })
 
-@blue.route('/receive_list/', methods=('GET',))  # 编辑收货地址接口
+@blue.route('/receive_list/', methods=('GET',))  # 展示收货地址列表接口
 def receive_list():
     try:
         token = request.args.get('token')
